@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import MobileMenu, { MobileMenuButton } from "./MobileMenu";
@@ -19,9 +20,14 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="relative bg-white px-4 py-4 shadow-sm md:px-10">
+    <motion.nav
+      initial={{ y: -40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="relative z-40 bg-white px-4 py-4 shadow-sm md:px-10"
+    >
       <div className="flex items-center justify-between">
-        {/* اللوجو */}
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-xl leading-none">
           <Image
             src="/logo.png"
@@ -35,7 +41,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* الروابط (شاشة كبيرة بس) */}
+        {/* Desktop links */}
         <ul className="hidden gap-2 text-xs font-semibold text-ink md:flex lg:gap-6">
           {links.map((link) => (
             <li key={link.href}>
@@ -53,21 +59,25 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* زراير الدخول (شاشة كبيرة بس) */}
+        {/* Desktop auth buttons */}
         <div className="hidden items-center gap-4 text-xs font-semibold md:flex">
-          <Link href="/login">LOGIN</Link>
+          <Link href="/login" className="transition hover:text-primary">
+            LOGIN
+          </Link>
           <Link
             href="/signup"
-            className="rounded-full bg-primary px-5 py-2 text-white transition hover:bg-primary-hover"
+            className="rounded-full bg-primary px-5 py-2 text-white transition hover:scale-105 hover:bg-primary-hover active:scale-95"
           >
             SIGN UP
           </Link>
         </div>
 
+        {/* Mobile menu button */}
         <MobileMenuButton open={open} onToggle={() => setOpen(!open)} />
       </div>
 
+      {/* Mobile menu */}
       {open && <MobileMenu links={links} onClose={() => setOpen(false)} />}
-    </nav>
+    </motion.nav>
   );
 }
