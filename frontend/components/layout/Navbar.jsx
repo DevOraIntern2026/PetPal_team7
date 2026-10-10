@@ -24,9 +24,9 @@ export default function Navbar() {
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative z-40 bg-white px-4 py-4 shadow-sm md:px-10"
+      className="relative z-40 bg-white px-4 py-4 shadow-sm md:h-20 md:px-10"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex h-full items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-xl leading-none">
           <Image

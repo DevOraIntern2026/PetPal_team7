@@ -5,8 +5,8 @@ import dogAndCatImage from "../../public/hero-pets.png";
 
 export default function Hero() {
   return (
-    <section className="bg-surface px-4 py-10 md:px-10 md:py-12">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-8 md:flex-row md:gap-10">
+    <section className="flex min-h-162.5 items-center bg-surface px-4 py-10 md:px-10 md:py-0">
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-8 md:flex-row md:gap-10">
         {/* Text */}
         <FadeIn direction="right" className="max-w-md text-center md:text-left">
           <p className="mb-4 text-xs font-semibold md:mb-6">
@@ -39,12 +39,12 @@ export default function Hero() {
         </FadeIn>
 
         {/* Image */}
-        <FadeIn direction="left" delay={0.2}>
+        <FadeIn direction="left" delay={0.2} className="w-full md:w-1/2">
           <Image
             src={dogAndCatImage}
             alt="Dog and cat"
             priority
-            className="h-auto w-full max-w-xs md:max-w-sm lg:max-w-md"
+            className="h-auto w-full max-w-xs md:max-w-md lg:max-w-125"
           />
         </FadeIn>
       </div>
