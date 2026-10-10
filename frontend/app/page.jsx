@@ -1,4 +1,9 @@
+import ProductsSection from "../components/landing/ProductsSection";
 
-export default function page() {
-  return <>Landing Page</>;
+export default function Page() {
+  return (
+    <>
+      <ProductsSection />
+    </>
+  );
 }
