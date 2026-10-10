@@ -80,16 +80,17 @@ export default function ProductsSection() {
   return (
     <section
       id="products"
-      className="relative w-full overflow-hidden bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20"
+      className="relative w-full overflow-hidden bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20"
     >
-      {/* Soft decorative background */}
+      {/* Decorative background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-cyan-100/40 blur-3xl"
+        className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-primary-tint/70 blur-3xl"
       />
+
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-24 bottom-0 h-56 w-56 rounded-full bg-lime-100/50 blur-3xl"
+        className="pointer-events-none absolute -left-24 bottom-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl">
@@ -102,20 +103,22 @@ export default function ProductsSection() {
           className="mb-9 flex flex-col gap-6 md:mb-12 md:flex-row md:items-end md:justify-between"
         >
           <div className="max-w-xl">
+            {/* Label */}
             <motion.span
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.15 }}
-              className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#E8F8FA] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#219DB1] sm:text-xs"
+              className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary-tint px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-primary-strong sm:text-xs"
             >
-              <span className="h-2 w-2 rounded-full bg-[#2EADC5]" />
+              <span className="h-2 w-2 rounded-full bg-primary" />
               Made with love for pets
             </motion.span>
 
-            <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-[#202B30] sm:text-4xl lg:text-5xl">
+            {/* Title */}
+            <h2 className="text-title font-extrabold tracking-tight text-ink">
               Choices They’ll{" "}
-              <span className="relative inline-block text-[#2EADC5]">
+              <span className="relative inline-block text-primary-strong">
                 Love
                 <motion.span
                   aria-hidden="true"
@@ -123,15 +126,15 @@ export default function ProductsSection() {
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.35 }}
-                  className="absolute -bottom-1 left-0 h-1 w-full origin-left rounded-full bg-[#BDEB8B]"
+                  className="absolute -bottom-1 left-0 h-1 w-full origin-left rounded-full bg-accent"
                 />
               </span>
             </h2>
 
-            <p className="mt-4 max-w-md text-sm leading-7 text-gray-500 sm:text-base">
-              <span className="font-bold text-[#2EADC5]">HERE</span> Quality you
-              can trust. Care they can feel. Find little things that make your
-              pet’s life happier.
+            <p className="mt-4 max-w-md text-sm leading-7 text-ink-muted sm:text-base">
+              <span className="font-bold text-primary-strong">HERE</span>{" "}
+              Quality you can trust. Care they can feel. Find little things that
+              make your pet’s life happier.
             </p>
           </div>
 
@@ -139,21 +142,21 @@ export default function ProductsSection() {
           <div className="w-full md:max-w-xs">
             <label
               htmlFor="product-search"
-              className="mb-2 block text-xs font-semibold text-gray-600"
+              className="mb-2 block text-xs font-semibold text-ink-muted"
             >
               Find their next favorite
             </label>
 
             <motion.div
               whileFocus={{ scale: 1.01 }}
-              className="flex h-12 items-center gap-3 rounded-2xl border border-gray-200 bg-white/90 px-4 shadow-sm transition-colors focus-within:border-[#2EADC5] focus-within:ring-4 focus-within:ring-cyan-100"
+              className="flex h-12 items-center gap-3 rounded-card border border-primary-tint bg-white px-4 shadow-sm transition-colors focus-within:border-primary-strong focus-within:ring-4 focus-within:ring-primary/10"
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.8"
-                className="h-5 w-5 shrink-0 text-[#2EADC5]"
+                className="h-5 w-5 shrink-0 text-primary-strong"
                 aria-hidden="true"
               >
                 <circle cx="10.5" cy="10.5" r="6.5" />
@@ -166,17 +169,17 @@ export default function ProductsSection() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search products..."
-                className="w-full bg-transparent text-sm text-gray-800 outline-none placeholder:text-gray-400"
+                className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-muted/60"
               />
             </motion.div>
           </div>
         </motion.div>
 
         {/* Product count */}
-        <div className="mb-5 flex items-center justify-between">
-          <p className="text-sm font-semibold text-gray-700">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-ink">
             Our favorites{" "}
-            <span className="ml-1 text-xs font-normal text-gray-400">
+            <span className="ml-1 text-xs font-normal text-ink-muted">
               ({filteredProducts.length} items)
             </span>
           </p>
@@ -185,7 +188,7 @@ export default function ProductsSection() {
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="text-xs font-semibold text-[#219DB1] hover:underline"
+              className="text-xs font-semibold text-primary-strong transition-colors hover:text-primary-deep hover:underline"
             >
               Clear search
             </button>
@@ -212,12 +215,12 @@ export default function ProductsSection() {
                   exit="exit"
                   whileHover={{ y: -6 }}
                   transition={{ layout: { duration: 0.25 } }}
-                  className="group relative min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_5px_24px_rgba(25,65,70,0.05)] transition-shadow duration-300 hover:border-[#D5F0F2] hover:shadow-[0_15px_35px_rgba(25,120,130,0.12)] sm:rounded-3xl"
+                  className="group relative min-w-0 overflow-hidden rounded-card border border-primary-tint/70 bg-white shadow-card transition-shadow duration-300 hover:border-primary/40 hover:shadow-image"
                 >
                   {/* Image area */}
-                  <div className="relative m-2 flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-[#F5F8EB] sm:m-3 sm:rounded-2xl">
+                  <div className="relative m-2 flex aspect-square items-center justify-center overflow-hidden rounded-media bg-cream sm:m-3">
                     {product.tag && (
-                      <span className="absolute left-2 top-2 z-10 rounded-full bg-white/90 px-2 py-1 text-[8px] font-bold text-[#418D68] shadow-sm sm:left-3 sm:top-3 sm:text-[10px]">
+                      <span className="absolute left-2 top-2 z-10 rounded-full bg-white/95 px-2 py-1 text-[8px] font-bold text-primary-deep shadow-sm sm:left-3 sm:top-3 sm:text-[10px]">
                         {product.tag}
                       </span>
                     )}
@@ -231,7 +234,7 @@ export default function ProductsSection() {
                       className="h-full w-full object-contain p-2 sm:p-4"
                     />
 
-                    <div className="absolute bottom-2 right-2 rounded-full bg-white/90 px-2 py-1 text-[8px] font-medium text-gray-500 sm:text-[10px]">
+                    <div className="absolute bottom-2 right-2 rounded-full bg-white/95 px-2 py-1 text-[8px] font-medium text-ink-muted sm:text-[10px]">
                       {product.category}
                     </div>
                   </div>
@@ -240,17 +243,18 @@ export default function ProductsSection() {
                   <div className="px-3 pb-3 pt-1 sm:px-4 sm:pb-4">
                     <h3
                       title={product.name}
-                      className="min-h-10 text-xs font-bold leading-5 text-[#263438] sm:text-sm"
+                      className="min-h-10 text-xs font-bold leading-5 text-ink sm:text-sm"
                     >
                       {product.name}
                     </h3>
 
                     <div className="mt-2 flex items-center justify-between gap-1">
                       <div className="min-w-0">
-                        <p className="text-[9px] text-gray-400 sm:text-[10px]">
+                        <p className="text-[9px] text-ink-muted sm:text-[10px]">
                           Price
                         </p>
-                        <p className="text-sm font-extrabold text-[#239FB4] sm:text-base">
+
+                        <p className="text-sm font-extrabold text-primary-strong sm:text-base">
                           EGP {product.price}
                         </p>
                       </div>
@@ -267,8 +271,8 @@ export default function ProductsSection() {
                         aria-pressed={isAdded}
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xl font-medium transition-colors sm:h-10 sm:w-10 ${
                           isAdded
-                            ? "bg-[#E5F6E8] text-[#32864B]"
-                            : "bg-[#E8F8FA] text-[#219DB1] hover:bg-[#2EADC5] hover:text-white"
+                            ? "bg-primary-tint text-primary-deep"
+                            : "bg-primary-tint text-primary-strong hover:bg-primary hover:text-white"
                         }`}
                       >
                         <motion.span
@@ -293,19 +297,22 @@ export default function ProductsSection() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-3xl bg-[#F5F8EB] px-5 py-12 text-center"
+            className="rounded-feature bg-primary-tint px-5 py-12 text-center"
           >
             <div className="mb-3 text-4xl" aria-hidden="true">
               🐾
             </div>
-            <h3 className="font-bold text-gray-800">No products found</h3>
-            <p className="mt-2 text-sm text-gray-500">
+
+            <h3 className="font-bold text-ink">No products found</h3>
+
+            <p className="mt-2 text-sm text-ink-muted">
               Try another name to find something for your furry friend.
             </p>
+
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="mt-5 rounded-full bg-[#2EADC5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#218DA0]"
+              className="mt-5 rounded-full bg-primary-strong px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-deep"
             >
               Show all products
             </button>
@@ -318,8 +325,8 @@ export default function ProductsSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="mt-8 text-center text-xs text-gray-400 sm:mt-10"
-        ></motion.p>
+          className="mt-8 text-center text-xs text-ink-muted sm:mt-10"
+        />
       </div>
     </section>
   );

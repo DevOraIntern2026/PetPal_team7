@@ -95,7 +95,7 @@ export default function AdoptionSection() {
   return (
     <section
       id="adoption-pets"
-      className="relative isolate min-h-[600px] w-full overflow-hidden bg-white px-4 py-12 font-sans text-[#252525] sm:px-6 sm:py-16 lg:px-10 lg:py-20"
+      className="relative isolate min-h-[600px] w-full overflow-hidden bg-cream px-4 py-12 font-sans text-ink sm:px-6 sm:py-16 lg:px-10 lg:py-20"
     >
       {/* Decorative paw-print background */}
       <div
@@ -105,7 +105,7 @@ export default function AdoptionSection() {
         {pawPositions.map((paw, index) => (
           <FaPaw
             key={index}
-            className="absolute h-7 w-7 text-[#2DAAC1] opacity-[0.055] sm:h-9 sm:w-9"
+            className="absolute h-7 w-7 text-primary opacity-[0.055] sm:h-9 sm:w-9"
             style={{
               top: paw.top,
               left: paw.left,
@@ -124,11 +124,11 @@ export default function AdoptionSection() {
           transition={{ duration: 0.55 }}
           className="mb-9 text-center md:mb-12"
         >
-          <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-[#2DAAC1] sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-primary-strong sm:text-4xl lg:text-5xl">
             A New Home. A New Story
           </h2>
 
-          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-gray-500 sm:text-base">
+          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-ink-muted sm:text-base">
             Sweet pets looking for a safe home, a loving
             <br className="hidden sm:block" /> heart, and a second chance at
             happiness.
@@ -153,8 +153,8 @@ export default function AdoptionSection() {
                 }}
                 className={`flex h-10 min-w-[90px] items-center justify-center gap-2 rounded-full border px-5 text-sm font-medium transition-colors duration-200 ${
                   activeFilter === filter
-                    ? "border-[#2DAAC1] bg-[#2DAAC1] text-white"
-                    : "border-[#2DAAC1] bg-white/90 text-[#252525] hover:bg-[#eaf9fc]"
+                    ? "border-primary bg-primary text-white"
+                    : "border-primary/30 bg-white text-ink hover:bg-primary-tint"
                 }`}
                 aria-pressed={activeFilter === filter}
               >
@@ -170,7 +170,7 @@ export default function AdoptionSection() {
               </motion.button>
 
               {filter === "Near" && showLocations && (
-                <div className="absolute left-1/2 top-12 z-30 min-w-[140px] -translate-x-1/2 overflow-hidden rounded-xl border border-slate-100 bg-white p-1 shadow-lg">
+                <div className="absolute left-1/2 top-12 z-30 min-w-[140px] -translate-x-1/2 overflow-hidden rounded-card border border-primary-tint bg-white p-1 shadow-card">
                   {["Cairo", "Alex"].map((city) => (
                     <button
                       type="button"
@@ -180,10 +180,10 @@ export default function AdoptionSection() {
                         setActiveFilter("Near");
                         setShowLocations(false);
                       }}
-                      className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm hover:bg-[#eaf9fc] ${
+                      className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm transition-colors hover:bg-primary-tint ${
                         selectedCity === city
-                          ? "font-semibold text-[#239bb2]"
-                          : "text-slate-700"
+                          ? "font-semibold text-primary-strong"
+                          : "text-ink-muted"
                       }`}
                     >
                       {city}
@@ -210,7 +210,7 @@ export default function AdoptionSection() {
                 exit={{ opacity: 0, scale: 0.92 }}
                 transition={{ duration: 0.25, delay: index * 0.055 }}
                 whileHover={{ y: -5 }}
-                className="group min-w-0 overflow-hidden rounded-2xl border border-[#f1f0d9] bg-white shadow-[0_5px_24px_rgba(25,65,70,0.05)] transition-shadow duration-300 hover:border-[#D5F0F2] hover:shadow-[0_15px_35px_rgba(25,120,130,0.12)] sm:rounded-3xl"
+                className="group min-w-0 overflow-hidden rounded-card border border-primary-tint bg-white shadow-card transition-shadow duration-300 hover:border-primary/40 hover:shadow-image"
               >
                 {/* Image */}
                 <div className="relative h-[160px] overflow-hidden sm:h-[220px] lg:h-[280px]">
@@ -237,8 +237,8 @@ export default function AdoptionSection() {
                     <FaHeart
                       className={`h-4 w-4 ${
                         favorites.includes(pet.id)
-                          ? "text-rose-500"
-                          : "text-[#555555]"
+                          ? "text-accent"
+                          : "text-ink-muted"
                       }`}
                     />
                   </button>
@@ -246,20 +246,20 @@ export default function AdoptionSection() {
 
                 {/* Pet details */}
                 <div className="p-3 sm:p-4">
-                  <h3 className="truncate text-sm font-bold leading-5 text-[#222222] sm:text-base">
+                  <h3 className="truncate text-sm font-bold leading-5 text-ink sm:text-base">
                     {pet.name}
                   </h3>
 
-                  <p className="mt-1 text-xs text-gray-500 sm:text-sm">
+                  <p className="mt-1 text-xs text-ink-muted sm:text-sm">
                     {pet.breed}
                   </p>
 
                   <div className="mt-3 flex items-center justify-between gap-2">
-                    <div className="min-w-0 text-xs leading-relaxed text-[#555555] sm:text-sm">
+                    <div className="min-w-0 text-xs leading-relaxed text-ink-muted sm:text-sm">
                       <p>{pet.gender}</p>
 
                       <p className="flex items-center gap-1 truncate">
-                        <FaMapMarkerAlt className="shrink-0 text-[#2DAAC1]" />
+                        <FaMapMarkerAlt className="shrink-0 text-primary" />
                         {pet.city}
                       </p>
                     </div>
@@ -272,7 +272,7 @@ export default function AdoptionSection() {
                           `Thanks for choosing ${pet.name}! Adoption details will be available soon.`,
                         );
                       }}
-                      className="shrink-0 rounded-full bg-[#2DAAC1] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#218da2] sm:px-4 sm:text-sm"
+                      className="shrink-0 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-primary-deep sm:px-4 sm:text-sm"
                     >
                       Adopt me
                     </motion.button>
@@ -288,7 +288,7 @@ export default function AdoptionSection() {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="py-12 text-center text-sm text-slate-500"
+            className="py-12 text-center text-sm text-ink-muted"
           >
             No pets found in this category yet.
           </motion.p>
@@ -312,7 +312,7 @@ export default function AdoptionSection() {
                 .getElementById("adoption-pets")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
-            className="flex h-11 w-[150px] items-center justify-center gap-2 rounded-full bg-[#2DAAC1] text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#218da2] hover:shadow-md"
+            className="flex h-11 w-[150px] items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-deep hover:shadow-card"
           >
             Go Now
           </motion.button>

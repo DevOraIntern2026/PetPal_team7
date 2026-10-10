@@ -79,11 +79,11 @@ const itemVariants = {
 function SectionTitle({ icon: Icon, children }) {
   return (
     <div className="mb-7 flex items-center gap-4">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#e5f8fb] text-xl text-[#159bb5] transition-transform duration-300 hover:rotate-6 hover:scale-110">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-tint text-xl text-primary-strong transition-transform duration-300 hover:rotate-6 hover:scale-110">
         <Icon aria-hidden="true" />
       </div>
 
-      <h3 className="text-lg font-bold tracking-tight text-[#173653] sm:text-xl">
+      <h3 className="text-lg font-bold tracking-tight text-ink sm:text-xl">
         {children}
       </h3>
     </div>
@@ -92,16 +92,16 @@ function SectionTitle({ icon: Icon, children }) {
 
 export default function Footer() {
   return (
-    <footer className="relative mt-16 w-full overflow-hidden border-t border-[#d9f0f4] bg-gradient-to-b from-white via-[#f9fdfe] to-[#effafd] text-[#173653] sm:mt-20">
+    <footer className="relative mt-16 w-full overflow-hidden border-t border-primary-tint bg-gradient-to-b from-white via-cream to-primary-tint text-ink sm:mt-20">
       {/* Decorative background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-[#dff7fb] opacity-60 blur-3xl"
+        className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-primary-tint opacity-60 blur-3xl"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-[#e0f6fa] opacity-70 blur-3xl"
+        className="pointer-events-none absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-primary opacity-10 blur-3xl"
       />
 
       <motion.div
@@ -119,21 +119,21 @@ export default function Footer() {
               aria-label="Pet Mate Home"
               className="group mb-5 inline-flex items-center gap-3"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2dbbd0] to-[#148fa9] text-3xl text-white shadow-lg shadow-[#28afc5]/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
+              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-strong text-3xl text-white shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
                 <FaPaw aria-hidden="true" />
               </span>
 
-              <span className="text-3xl font-extrabold tracking-tight text-[#173653] sm:text-4xl">
-                Pet <span className="text-[#20a9c1]">Mate</span>
+              <span className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
+                Pet <span className="text-primary-strong">Mate</span>
               </span>
             </Link>
 
-            <p className="mb-5 text-lg font-medium leading-8 text-[#397087]">
+            <p className="mb-5 text-lg font-medium leading-8 text-primary-deep">
               Better care. Happier pets.
               <br />A healthier tomorrow.
             </p>
 
-            <p className="max-w-sm text-sm leading-7 text-[#5d7488] sm:text-base">
+            <p className="max-w-sm text-sm leading-7 text-ink-muted sm:text-base">
               At Pet Mate, we believe every pet deserves love, care, and the
               best support. Our platform connects pet owners with trusted vets,
               helpful resources, and smart tools — all in one place.
@@ -148,11 +148,11 @@ export default function Footer() {
                   transition={{ duration: 0.2 }}
                   className="flex flex-col items-center gap-3 text-center"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#d9f0f4] bg-white text-lg text-[#159bb5] shadow-sm sm:h-14 sm:w-14 sm:text-xl">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary-tint bg-white text-lg text-primary-strong shadow-sm sm:h-14 sm:w-14 sm:text-xl">
                     <Icon aria-hidden="true" />
                   </div>
 
-                  <span className="text-xs font-medium leading-5 text-[#526c82] sm:text-sm">
+                  <span className="text-xs font-medium leading-5 text-ink-muted sm:text-sm">
                     {label}
                   </span>
                 </motion.div>
@@ -169,11 +169,11 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group inline-flex items-center gap-3 text-sm text-[#526c82] transition-colors duration-200 hover:text-[#159bb5] sm:text-base"
+                    className="group inline-flex items-center gap-3 text-sm text-ink-muted transition-colors duration-200 hover:text-primary-strong sm:text-base"
                   >
                     <FaArrowRight
                       aria-hidden="true"
-                      className="shrink-0 text-xs text-[#20a9c1] transition-transform duration-200 group-hover:translate-x-1"
+                      className="shrink-0 text-xs text-primary transition-transform duration-200 group-hover:translate-x-1"
                     />
                     <span>{link.label}</span>
                   </Link>
@@ -191,11 +191,11 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group inline-flex items-center gap-3 text-sm text-[#526c82] transition-colors duration-200 hover:text-[#159bb5] sm:text-base"
+                    className="group inline-flex items-center gap-3 text-sm text-ink-muted transition-colors duration-200 hover:text-primary-strong sm:text-base"
                   >
                     <FaArrowRight
                       aria-hidden="true"
-                      className="shrink-0 text-xs text-[#20a9c1] transition-transform duration-200 group-hover:translate-x-1"
+                      className="shrink-0 text-xs text-primary transition-transform duration-200 group-hover:translate-x-1"
                     />
                     <span>{link.label}</span>
                   </Link>
@@ -206,23 +206,23 @@ export default function Footer() {
             {/* Contact card */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="mt-8 rounded-2xl border border-[#d9f0f4] bg-white/80 p-5 shadow-sm transition-shadow duration-300 hover:shadow-lg hover:shadow-[#28afc5]/10"
+              className="mt-8 rounded-card border border-primary-tint bg-white/80 p-5 shadow-sm transition-shadow duration-300 hover:shadow-card"
             >
               <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e5f8fb] text-lg text-[#159bb5]">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-tint text-lg text-primary-strong">
                   <FaCommentDots aria-hidden="true" />
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-[#173653]">Need help?</h4>
+                  <h4 className="font-bold text-ink">Need help?</h4>
 
-                  <p className="mt-2 text-sm leading-6 text-[#718397]">
+                  <p className="mt-2 text-sm leading-6 text-ink-muted">
                     Our support team is here to help you.
                   </p>
 
                   <Link
                     href="/contact-us"
-                    className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-[#159bb5] transition-colors hover:text-[#087c94]"
+                    className="group mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary-strong transition-colors hover:text-primary-deep"
                   >
                     Get in touch
                     <FaArrowRight
@@ -239,7 +239,7 @@ export default function Footer() {
           <motion.div variants={itemVariants}>
             <SectionTitle icon={FaUsers}>Follow Us</SectionTitle>
 
-            <p className="mb-6 max-w-xs text-sm leading-7 text-[#5d7488] sm:text-base">
+            <p className="mb-6 max-w-xs text-sm leading-7 text-ink-muted sm:text-base">
               Stay connected for pet care tips, updates, and more!
             </p>
 
@@ -253,7 +253,7 @@ export default function Footer() {
                   aria-label={label}
                   whileHover={{ y: -5, scale: 1.08 }}
                   whileTap={{ scale: 0.94 }}
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2dbbd0] to-[#148fa9] text-lg text-white shadow-md shadow-[#28afc5]/15 transition-shadow duration-300 hover:shadow-lg hover:shadow-[#28afc5]/30 sm:h-14 sm:w-14 sm:text-xl"
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-strong text-lg text-white shadow-md shadow-primary/15 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/30 sm:h-14 sm:w-14 sm:text-xl"
                 >
                   <Icon aria-hidden="true" />
                 </motion.a>
@@ -263,18 +263,18 @@ export default function Footer() {
             {/* Friendly closing message */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="mt-9 rounded-3xl border border-[#d9f0f4] bg-gradient-to-br from-[#e7f9fc] to-white p-6"
+              className="mt-9 rounded-feature border border-primary-tint bg-gradient-to-br from-primary-tint to-white p-6"
             >
-              <div className="mb-3 flex items-center gap-2 text-2xl text-[#20a9c1]">
+              <div className="mb-3 flex items-center gap-2 text-2xl text-primary-strong">
                 <FaPaw aria-hidden="true" />
                 <FaHeart aria-hidden="true" className="text-lg" />
               </div>
 
-              <p className="text-lg font-bold leading-7 text-[#173653]">
+              <p className="text-lg font-bold leading-7 text-ink">
                 Every pet deserves a little more love.
               </p>
 
-              <p className="mt-2 text-sm leading-6 text-[#718397]">
+              <p className="mt-2 text-sm leading-6 text-ink-muted">
                 We’re here to make caring for your best friend easier.
               </p>
             </motion.div>
@@ -283,18 +283,18 @@ export default function Footer() {
       </motion.div>
 
       {/* Bottom bar */}
-      <div className="relative border-t border-[#d5edf2] bg-[#eaf8fb]/80">
+      <div className="relative border-t border-primary-tint bg-primary-tint/70">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-6 sm:px-8 md:flex-row lg:px-10">
-          <p className="text-center text-xs text-[#668196] sm:text-sm">
+          <p className="text-center text-xs text-ink-muted sm:text-sm">
             © {new Date().getFullYear()} Pet Mate. All rights reserved.
           </p>
 
-          <div className="flex items-center gap-2 text-sm font-medium text-[#52758a]">
-            <FaPaw className="text-[#20a9c1]" aria-hidden="true" />
+          <div className="flex items-center gap-2 text-sm font-medium text-primary-deep">
+            <FaPaw className="text-primary-strong" aria-hidden="true" />
             <span>Health</span>
-            <span className="mx-1 text-[#20a9c1]">•</span>
+            <span className="mx-1 text-primary">•</span>
             <span>Love</span>
-            <span className="mx-1 text-[#20a9c1]">•</span>
+            <span className="mx-1 text-primary">•</span>
             <span>Together</span>
           </div>
         </div>
