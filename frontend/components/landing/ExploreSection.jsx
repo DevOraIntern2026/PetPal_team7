@@ -13,7 +13,7 @@ const CARDS = [
     caption: "Find your best companion",
     cta: "Adopt",
     href: "/adopt",
-    image: "/images/landing/adopt.png",
+    image: "/images/landing/adopt.webp",
     alt: "A golden retriever being cuddled",
   },
   {
@@ -31,7 +31,7 @@ const CARDS = [
     caption: "Quality stuff for pets",
     cta: "Store",
     href: "/store",
-    image: "/images/landing/store.png",
+    image: "/images/landing/store.webp",
     alt: "Shelves of pet supplies",
   },
   {
