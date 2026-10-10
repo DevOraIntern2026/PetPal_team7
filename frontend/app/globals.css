@@ -5,6 +5,17 @@
   --foreground: #171717;
 }
 
+@theme {
+  --color-primary: #31a8c3;
+  --color-primary-hover: #2a93ab;
+
+  --color-surface: #f6fbe9; /* خلفية الـ Hero */
+
+  --color-accent: #f97316; /* WELCOME (برتقالي) */
+  --color-ink: #111827; /* النص الغامق */
+  --color-muted: #6b7280; /* النص الرمادي */
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
