@@ -66,7 +66,7 @@ export default function VetSection() {
         <div className="relative order-first max-w-105 pr-4 pb-4 before:absolute before:top-4 before:right-0 before:bottom-0 before:left-4 before:rounded-feature before:bg-primary-tint lg:order-none lg:max-w-none">
           <div className="relative aspect-4/3 overflow-hidden rounded-feature bg-linear-to-br from-primary-tint to-cream shadow-image lg:aspect-4/5">
             <Image
-              src="/images/landing/vet.png"
+              src="/images/landing/vet.webp"
               alt="A vet examining a ginger cat on a clinic table"
               fill
               sizes="(max-width: 1024px) 100vw, 480px"
