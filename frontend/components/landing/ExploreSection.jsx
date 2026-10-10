@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import FadeIn from "../shared/FadeIn";
 
 const FILTERS = ["All", "Adopt", "Store", "Vets"];
 
@@ -102,15 +103,17 @@ export default function ExploreSection() {
           </Link>
         </div>
 
-        <h2
-          id="explore-heading"
-          className="mb-3 font-display text-hero font-semibold tracking-tight text-balance text-primary-strong">
-          A Little Knowledge, Better Care
-        </h2>
-        <p className="mb-6 max-w-[36ch] text-lg leading-normal text-ink-muted">
-          Clear, simple answers to the questions you face every day with your
-          pet
-        </p>
+        <FadeIn direction="up">
+          <h2
+            id="explore-heading"
+            className="mb-3 font-display text-hero font-semibold tracking-tight text-balance text-primary-strong">
+            A Little Knowledge, Better Care
+          </h2>
+          <p className="mb-6 max-w-[36ch] text-lg leading-normal text-ink-muted">
+            Clear, simple answers to the questions you face every day with your
+            pet
+          </p>
+        </FadeIn>
 
         <div
           className="mb-8 flex flex-wrap gap-2"
@@ -129,17 +132,18 @@ export default function ExploreSection() {
         </div>
 
         <ul className="m-0 flex list-none snap-x snap-mandatory scroll-px-1 gap-4 overflow-x-auto p-1 pb-6">
-          {visible.map((card) => (
+          {visible.map((card, i) => (
             <li
               key={card.id}
-              className="flex w-[min(280px,78vw)] shrink-0 snap-start flex-col gap-3 rounded-card bg-white p-2 pb-3 shadow-card">
+              style={{ animationDelay: `${i * 90}ms` }}
+              className="group flex w-[min(280px,78vw)] shrink-0 snap-start flex-col gap-3 rounded-card bg-white p-2 pb-3 shadow-card transition duration-300 hover:-translate-y-1.5 hover:shadow-image motion-safe:animate-rise motion-reduce:transition-none">
               <div className="relative aspect-4/3 overflow-hidden rounded-media bg-linear-to-br from-primary-tint to-cream">
                 <Image
                   src={card.image}
                   alt={card.alt}
                   fill
                   sizes="(max-width: 640px) 78vw, 280px"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
                   onError={(e) => {
                     e.currentTarget.style.visibility = "hidden";
                   }}
