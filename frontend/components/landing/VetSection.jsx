@@ -48,7 +48,6 @@ export default function VetSection() {
             <ul className="mb-8 grid list-none gap-3 p-0">
               {POINTS.map((point) => (
                 <li
-  
                   key={point}
                   className="flex max-w-[52ch] items-start gap-3 leading-snug">
                   <span className="mt-0.5 inline-grid size-6 shrink-0 place-items-center rounded-full bg-primary-tint text-primary-strong">
