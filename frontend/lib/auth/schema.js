@@ -19,10 +19,5 @@ export const signupSchema = z
       .string()
       .min(8, "Use at least 8 characters")
       .regex(/\d/, "Include at least one number"),
-    confirmPassword: z.string().min(1, "Confirm your password"),
     terms: z.boolean().refine((v) => v, "Please accept the terms to continue"),
   })
-  .refine((d) => d.password === d.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords don't match",
-  });

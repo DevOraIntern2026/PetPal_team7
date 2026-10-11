@@ -59,8 +59,6 @@ export default function SignupForm() {
         error={errors.email?.message}
         {...register("email")}
       />
-
-      <div className="grid gap-5 sm:grid-cols-2">
         <Field
           label="Password"
           type="password"
@@ -68,14 +66,6 @@ export default function SignupForm() {
           error={errors.password?.message}
           {...register("password")}
         />
-        <Field
-          label="Confirm password"
-          type="password"
-          autoComplete="new-password"
-          error={errors.confirmPassword?.message}
-          {...register("confirmPassword")}
-        />
-      </div>
 
       <div>
         <label className="flex items-start gap-3 text-sm text-ink-muted">
