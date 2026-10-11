@@ -24,8 +24,7 @@ export default function Navbar() {
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative z-40 bg-white px-4 py-4 shadow-sm md:h-20 md:px-10"
-    >
+      className="relative z-40 bg-white px-4 py-4 shadow-sm md:h-20 md:px-10">
       <div className="flex h-full items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-xl leading-none">
@@ -51,8 +50,7 @@ export default function Navbar() {
                   link.href === pathname
                     ? "bg-primary text-white"
                     : "hover:text-primary"
-                }`}
-              >
+                }`}>
                 {link.label}
               </Link>
             </li>
@@ -66,8 +64,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/signup"
-            className="rounded-full bg-primary px-5 py-2 text-white transition hover:scale-105 hover:bg-primary-hover active:scale-95"
-          >
+            className="rounded-full bg-primary-strong px-5 py-2 text-white transition hover:scale-105 hover:bg-primary-deep active:scale-95">
             SIGN UP
           </Link>
         </div>
