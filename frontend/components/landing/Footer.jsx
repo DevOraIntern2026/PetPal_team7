@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import { motion } from "framer-motion";
 import {
   FaPaw,
@@ -15,6 +16,7 @@ import {
   FaUsers,
   FaCommentDots,
 } from "react-icons/fa";
+import { useState, useEffect } from "react";
 
 const quickLinks = [
   { label: "Home", href: "/" },
@@ -91,6 +93,12 @@ function SectionTitle({ icon: Icon, children }) {
 }
 
 export default function Footer() {
+  const [year, setYear] = useState(2026);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="relative mt-16 w-full overflow-hidden border-t border-primary-tint bg-gradient-to-b from-white via-cream to-primary-tint text-ink sm:mt-20">
       {/* Decorative background */}
@@ -109,16 +117,14 @@ export default function Footer() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.12 }}
-        className="relative mx-auto max-w-7xl px-5 pb-12 pt-14 sm:px-8 sm:pb-14 sm:pt-16 lg:px-10 lg:pt-20"
-      >
+        className="relative mx-auto max-w-7xl px-5 pb-12 pt-14 sm:px-8 sm:pb-14 sm:pt-16 lg:px-10 lg:pt-20">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-x-10 lg:grid-cols-[1.35fr_1fr_1fr_1fr] lg:gap-12">
           {/* Brand */}
           <motion.div variants={itemVariants} className="max-w-md">
             <Link
               href="/"
               aria-label="Pet Mate Home"
-              className="group mb-5 inline-flex items-center gap-3"
-            >
+              className="group mb-5 inline-flex items-center gap-3">
               <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-strong text-3xl text-white shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
                 <FaPaw aria-hidden="true" />
               </span>
@@ -146,8 +152,7 @@ export default function Footer() {
                   key={label}
                   whileHover={{ y: -5, scale: 1.04 }}
                   transition={{ duration: 0.2 }}
-                  className="flex flex-col items-center gap-3 text-center"
-                >
+                  className="flex flex-col items-center gap-3 text-center">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary-tint bg-white text-lg text-primary-strong shadow-sm sm:h-14 sm:w-14 sm:text-xl">
                     <Icon aria-hidden="true" />
                   </div>
@@ -169,8 +174,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group inline-flex items-center gap-3 text-sm text-ink-muted transition-colors duration-200 hover:text-primary-strong sm:text-base"
-                  >
+                    className="group inline-flex items-center gap-3 text-sm text-ink-muted transition-colors duration-200 hover:text-primary-strong sm:text-base">
                     <FaArrowRight
                       aria-hidden="true"
                       className="shrink-0 text-xs text-primary transition-transform duration-200 group-hover:translate-x-1"
@@ -191,8 +195,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group inline-flex items-center gap-3 text-sm text-ink-muted transition-colors duration-200 hover:text-primary-strong sm:text-base"
-                  >
+                    className="group inline-flex items-center gap-3 text-sm text-ink-muted transition-colors duration-200 hover:text-primary-strong sm:text-base">
                     <FaArrowRight
                       aria-hidden="true"
                       className="shrink-0 text-xs text-primary transition-transform duration-200 group-hover:translate-x-1"
@@ -206,8 +209,7 @@ export default function Footer() {
             {/* Contact card */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="mt-8 rounded-card border border-primary-tint bg-white/80 p-5 shadow-sm transition-shadow duration-300 hover:shadow-card"
-            >
+              className="mt-8 rounded-card border border-primary-tint bg-white/80 p-5 shadow-sm transition-shadow duration-300 hover:shadow-card">
               <div className="flex items-start gap-3">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-tint text-lg text-primary-strong">
                   <FaCommentDots aria-hidden="true" />
@@ -222,8 +224,7 @@ export default function Footer() {
 
                   <Link
                     href="/contact-us"
-                    className="group mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary-strong transition-colors hover:text-primary-deep"
-                  >
+                    className="group mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary-strong transition-colors hover:text-primary-deep">
                     Get in touch
                     <FaArrowRight
                       aria-hidden="true"
@@ -253,8 +254,7 @@ export default function Footer() {
                   aria-label={label}
                   whileHover={{ y: -5, scale: 1.08 }}
                   whileTap={{ scale: 0.94 }}
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-strong text-lg text-white shadow-md shadow-primary/15 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/30 sm:h-14 sm:w-14 sm:text-xl"
-                >
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-strong text-lg text-white shadow-md shadow-primary/15 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/30 sm:h-14 sm:w-14 sm:text-xl">
                   <Icon aria-hidden="true" />
                 </motion.a>
               ))}
@@ -263,8 +263,7 @@ export default function Footer() {
             {/* Friendly closing message */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="mt-9 rounded-feature border border-primary-tint bg-gradient-to-br from-primary-tint to-white p-6"
-            >
+              className="mt-9 rounded-feature border border-primary-tint bg-gradient-to-br from-primary-tint to-white p-6">
               <div className="mb-3 flex items-center gap-2 text-2xl text-primary-strong">
                 <FaPaw aria-hidden="true" />
                 <FaHeart aria-hidden="true" className="text-lg" />
@@ -286,7 +285,7 @@ export default function Footer() {
       <div className="relative border-t border-primary-tint bg-primary-tint/70">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-6 sm:px-8 md:flex-row lg:px-10">
           <p className="text-center text-xs text-ink-muted sm:text-sm">
-            © {new Date().getFullYear()} Pet Mate. All rights reserved.
+            © {year} Pet Mate. All rights reserved.
           </p>
 
           <div className="flex items-center gap-2 text-sm font-medium text-primary-deep">

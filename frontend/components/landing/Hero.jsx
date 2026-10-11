@@ -29,7 +29,7 @@ export default function Hero() {
               Get Started
             </Link>
             <Link
-              href="#features"
+              href="/features"
               className="rounded-md border border-primary-strong/30 bg-white px-8 py-3 text-sm font-semibold text-ink transition hover:scale-105 hover:bg-primary-tint active:scale-95">
               Explore Features
             </Link>

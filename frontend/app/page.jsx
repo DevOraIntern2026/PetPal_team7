@@ -3,7 +3,6 @@ import ExploreSection from "../components/landing/ExploreSection";
 import VetSection from "../components/landing/VetSection";
 import ProductsSection from "../components/landing/ProductsSection";
 import AdoptionSection from "../components/landing/AdoptionSection";
-import Footer from "../components/landing/Footer";
 import WhyPetMate from "../components/landing/WhyPetMate";
 
 export default function Home() {
@@ -18,7 +17,6 @@ export default function Home() {
         <AdoptionSection />
       </main>
 
-      <Footer />
     </>
   );
 }
