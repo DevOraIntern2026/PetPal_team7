@@ -8,55 +8,92 @@ import {
   useMemo,
   useState,
 } from "react";
+import { authApi } from "./authApi";
+import { getErrorMessage } from "../api";
+import { clearSession, readSession, saveSession } from "./session";
 
 const AuthContext = createContext(null);
-const KEY = "petmate:user";
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "true";
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function readUser() {
-  try {
-    return JSON.parse(
-      localStorage.getItem(KEY) ?? sessionStorage.getItem(KEY) ?? "null",
-    );
-  } catch {
-    return null;
-  }
+function toSession(data) {
+  return {
+    token: data.token,
+    expiresAt: data.expiresAt,
+    user: { id: data.userId, name: data.fullName, email: data.email },
+  };
 }
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
-  const [promptReason, setPromptReason] = useState(null); // null = modal closed
+  const [promptReason, setPromptReason] = useState(null);
 
   useEffect(() => {
-    setUser(readUser());
+    setUser(readSession()?.user ?? null);
     setReady(true);
+
+    const onUnauthorized = () => setUser(null);
+    window.addEventListener("petmate:unauthorized", onUnauthorized);
+    return () =>
+      window.removeEventListener("petmate:unauthorized", onUnauthorized);
   }, []);
 
-  // TODO: replace the fake delay with the real Axios call once the API exists
-  const login = useCallback(async ({ email, remember }) => {
-    await new Promise((r) => setTimeout(r, 600));
-    const nextUser = { id: "demo", name: email.split("@")[0], email };
-    (remember ? localStorage : sessionStorage).setItem(
-      KEY,
-      JSON.stringify(nextUser),
-    );
-    setUser(nextUser);
+  const login = useCallback(async ({ email, password, remember }) => {
+    let session;
+    if (USE_MOCK) {
+      await wait(600);
+      session = {
+        token: "mock",
+        expiresAt: null,
+        user: { id: "demo", name: email.split("@")[0], email },
+      };
+    } else {
+      try {
+        session = toSession(await authApi.login({ email, password }));
+      } catch (err) {
+        throw new Error(
+          getErrorMessage(err, "Couldn't log in. Please try again."),
+        );
+      }
+    }
+    saveSession(session, remember);
+    setUser(session.user);
   }, []);
 
-  const signup = useCallback(async ({ name, email }) => {
-    await new Promise((r) => setTimeout(r, 600));
-    const nextUser = { id: "demo", name, email };
-    localStorage.setItem(KEY, JSON.stringify(nextUser));
-    setUser(nextUser);
+  const signup = useCallback(async ({ name, email, password }) => {
+    let session;
+    if (USE_MOCK) {
+      await wait(600);
+      session = {
+        token: "mock",
+        expiresAt: null,
+        user: { id: "demo", name, email },
+      };
+    } else {
+      try {
+        let data = await authApi.signup({ name, email, password });
+        // If register doesn't return a token, log in right after
+        if (!data?.token) data = await authApi.login({ email, password });
+        session = toSession(data);
+      } catch (err) {
+        throw new Error(
+          getErrorMessage(
+            err,
+            "Couldn't create your account. Please try again.",
+          ),
+        );
+      }
+    }
+    saveSession(session, true);
+    setUser(session.user);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(KEY);
-    sessionStorage.removeItem(KEY);
+    clearSession();
     setUser(null);
   }, []);
 
-  // Runs `action` if signed in, otherwise opens the sign-in modal.
   const requireAuth = useCallback(
     (reason, action) => {
       if (user) {
