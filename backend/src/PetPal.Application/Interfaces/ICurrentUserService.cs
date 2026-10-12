@@ -13,5 +13,7 @@ namespace PetPal.Application.Interfaces
         string? Email { get; }
 
         bool IsAuthenticated { get; }
+
+        bool IsAdmin { get; }
     }
 }

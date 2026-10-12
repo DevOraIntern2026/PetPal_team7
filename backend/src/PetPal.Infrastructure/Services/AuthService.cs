@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using PetPal.Application.Constants;
 using PetPal.Application.DTOs.Auth;
 using PetPal.Application.Exceptions;
 using PetPal.Application.Interfaces;
@@ -47,16 +48,17 @@ namespace PetPal.Infrastructure.Services
                 throw new BadRequestException(errors);
             }
 
-            var tokenResult = _tokenService.GenerateToken(user.Id, user.Email!, user.FullName);
+            // Public registration ALWAYS gets the User role. RegisterRequest has no role field by design.
+            var roleResult = await _userManager.AddToRoleAsync(user, Roles.User);
 
-            return new AuthResponse
+            if (!roleResult.Succeeded)
             {
-                Token = tokenResult.Token,
-                ExpiresAt = tokenResult.ExpiresAt,
-                UserId = user.Id,
-                FullName = user.FullName,
-                Email = user.Email!
-            };
+                await _userManager.DeleteAsync(user);
+
+                throw new InvalidOperationException("Could not assign the default role to the new user.");
+            }
+
+            return BuildResponse(user, new List<string> { Roles.User });
         }
 
         public async Task<AuthResponse> LoginAsync(LoginRequest request)
@@ -70,7 +72,23 @@ namespace PetPal.Infrastructure.Services
 
             if (!passwordValid) throw new UnauthorizedAccessException("Invalid email or password.");
 
-            var tokenResult = _tokenService.GenerateToken(user.Id, user.Email!, user.FullName);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            // Users created before roles existed have none: give them the safe default (never Admin).
+            if (roles.Count == 0)
+            {
+                var added = await _userManager.AddToRoleAsync(user, Roles.User);
+
+                if (added.Succeeded)
+                    roles = new List<string> { Roles.User };
+            }
+
+            return BuildResponse(user, roles);
+        }
+
+        private AuthResponse BuildResponse(ApplicationUser user, IList<string> roles)
+        {
+            var tokenResult = _tokenService.GenerateToken(user.Id, user.Email!, user.FullName, roles);
 
             return new AuthResponse
             {
@@ -78,7 +96,8 @@ namespace PetPal.Infrastructure.Services
                 ExpiresAt = tokenResult.ExpiresAt,
                 UserId = user.Id,
                 FullName = user.FullName,
-                Email = user.Email!
+                Email = user.Email!,
+                Roles = roles
             };
         }
     }

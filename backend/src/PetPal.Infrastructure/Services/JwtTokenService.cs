@@ -21,7 +21,7 @@ namespace PetPal.Infrastructure.Services
             _jwtSettings = jwtSettings;
         }
 
-        public TokenResult GenerateToken(Guid userId, string email, string fullName)
+        public TokenResult GenerateToken(Guid userId, string email, string fullName, IEnumerable<string>? roles = null)
         {
             var claims = new List<Claim>
             {
@@ -29,6 +29,9 @@ namespace PetPal.Infrastructure.Services
                 new(JwtRegisteredClaimNames.Email, email),
                 new(ClaimTypes.Name, fullName)
             };
+
+            foreach (var role in roles ?? Enumerable.Empty<string>())
+                claims.Add(new Claim(ClaimTypes.Role, role));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
 

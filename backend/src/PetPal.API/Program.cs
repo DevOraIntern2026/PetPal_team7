@@ -14,6 +14,7 @@ using PetPal.Infrastructure.Identity;
 using PetPal.Infrastructure.Services;
 using System.Text;
 using System.Text.Json.Serialization;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,16 @@ var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<
     ?? throw new InvalidOperationException("JWT settings are missing.");
 
 builder.Services.AddSingleton(jwtSettings);
+
+// Scheduling: bind + validate at startup. SchedulingClock throws a clear error if the
+// time zone cannot be resolved (fail fast, no silent fallback).
+var schedulingSettings = builder.Configuration.GetSection(SchedulingSettings.SectionName).Get<SchedulingSettings>()
+    ?? throw new InvalidOperationException("Scheduling settings are missing (Scheduling:TimeZoneId).");
+
+var schedulingClock = new SchedulingClock(schedulingSettings);
+
+builder.Services.AddSingleton(schedulingSettings);
+builder.Services.AddSingleton<ISchedulingClock>(schedulingClock);
 
 builder.Services.AddDbContext<PetPalDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -49,6 +60,12 @@ builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IAdoptionService, AdoptionService>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -122,6 +139,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<PetPalDbContext>();
     await db.Database.MigrateAsync();
     await PetPalDbSeeder.SeedAsync(db);
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider, builder.Configuration);
 }
 
 app.UseExceptionHandler();
@@ -130,8 +148,8 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
