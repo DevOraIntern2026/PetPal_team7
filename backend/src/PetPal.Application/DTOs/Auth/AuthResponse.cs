@@ -11,6 +11,8 @@ namespace PetPal.Application.DTOs.Auth
         public string Token { get; set; } = null!;
 
         public DateTime ExpiresAt { get; set; }
+        public string RefreshToken { get; set; } = null!;
+        public DateTime RefreshTokenExpiresAt { get; set; }
 
         public Guid UserId { get; set; }
 

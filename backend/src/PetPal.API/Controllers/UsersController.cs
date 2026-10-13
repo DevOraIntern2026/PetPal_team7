@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetPal.Application.DTOs.Users;
 using PetPal.Application.Interfaces;
@@ -7,6 +8,7 @@ namespace PetPal.API.Controllers
 {
     [Route("api/[controller]/me")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _users;

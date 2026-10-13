@@ -57,6 +57,10 @@ namespace PetPal.Infrastructure.Data
         public DbSet<AIConversation> AIConversations => Set<AIConversation>();
         public DbSet<AIMessage> AIMessages => Set<AIMessage>();
 
+        // Auth
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<PasswordResetCode> PasswordResetCodes => Set<PasswordResetCode>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

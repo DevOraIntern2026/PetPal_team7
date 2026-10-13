@@ -18,9 +18,12 @@ namespace PetPal.Infrastructure.Data
         private readonly PetPalDbContext _context;
         private readonly Dictionary<Type, object> _repositories = new();
 
+        private IRefreshTokenRepository? _refreshTokens;
+        private IPasswordResetCodeRepository? _passwordResetCodes;
         private IPetRepository? _pets;
         private IBreedRepository? _breeds;
         private IMedicalHistoryRepository? _medicalHistories;
+        private IVaccinationRepository? _vaccinations;
         private IDoctorRepository? _doctors;
         private IAppointmentRepository? _appointments;
         private IProductRepository? _products;
@@ -30,11 +33,14 @@ namespace PetPal.Infrastructure.Data
 
         public UnitOfWork(PetPalDbContext context) => _context = context;
 
+        public IRefreshTokenRepository RefreshTokens => _refreshTokens ??= new RefreshTokenRepository(_context);
+        public IPasswordResetCodeRepository PasswordResetCodes => _passwordResetCodes ??= new PasswordResetCodeRepository(_context);
         public IPetRepository Pets => _pets ??= new PetRepository(_context);
 
         public IBreedRepository Breeds => _breeds ??= new BreedRepository(_context);
 
         public IMedicalHistoryRepository MedicalHistories => _medicalHistories ??= new MedicalHistoryRepository(_context);
+        public IVaccinationRepository Vaccinations => _vaccinations ??= new VaccinationRepository(_context);
 
         public IDoctorRepository Doctors => _doctors ??= new DoctorRepository(_context);
 

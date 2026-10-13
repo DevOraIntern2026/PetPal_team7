@@ -15,11 +15,13 @@ namespace PetPal.Infrastructure.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICurrentUserService _currentUser;
+        private readonly IUnitOfWork _uow;
 
-        public UserService(UserManager<ApplicationUser> userManager, ICurrentUserService currentUser)
+        public UserService(UserManager<ApplicationUser> userManager, ICurrentUserService currentUser, IUnitOfWork uow)
         {
             _userManager = userManager;
             _currentUser = currentUser;
+            _uow = uow;
         }
 
         public async Task<UserProfileDto> GetProfileAsync()
@@ -47,10 +49,14 @@ namespace PetPal.Infrastructure.Services
         public async Task ChangePasswordAsync(ChangePasswordRequest request)
         {
             var user = await GetCurrentUserAsync();
+            if (!await _userManager.HasPasswordAsync(user))
+                throw new BadRequestException("This account has no password yet. Use 'Forgot password' to set one.");
 
             var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
 
             ThrowIfFailed(result);
+            // Sign the user out of every device.
+            await _uow.RefreshTokens.RevokeAllForUserAsync(user.Id, DateTime.UtcNow);
         }
 
         private async Task<ApplicationUser> GetCurrentUserAsync()

@@ -10,9 +10,12 @@ namespace PetPal.Application.Interfaces
 {
     public interface IUnitOfWork
     {
+        IRefreshTokenRepository RefreshTokens { get; }
+        IPasswordResetCodeRepository PasswordResetCodes { get; }
         IPetRepository Pets { get; }
         IBreedRepository Breeds { get; }
         IMedicalHistoryRepository MedicalHistories { get; }
+        IVaccinationRepository Vaccinations { get; }
         IDoctorRepository Doctors { get; }
         IAppointmentRepository Appointments { get; }
         IProductRepository Products { get; }

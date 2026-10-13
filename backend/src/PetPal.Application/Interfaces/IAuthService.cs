@@ -12,5 +12,11 @@ namespace PetPal.Application.Interfaces
         Task<AuthResponse> RegisterAsync(RegisterRequest request);
 
         Task<AuthResponse> LoginAsync(LoginRequest request);
+        Task<AuthResponse> RefreshAsync(RefreshTokenRequest request);
+
+        Task<AuthResponse> GoogleLoginAsync(ExternalLoginRequest request);
+        Task<AuthResponse> FacebookLoginAsync(ExternalLoginRequest request);
+
+        Task LogoutAsync(RefreshTokenRequest request);
     }
 }
