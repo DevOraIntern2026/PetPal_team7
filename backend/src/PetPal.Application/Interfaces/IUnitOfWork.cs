@@ -14,8 +14,12 @@ namespace PetPal.Application.Interfaces
         IBreedRepository Breeds { get; }
         IMedicalHistoryRepository MedicalHistories { get; }
 
+        IPostRepository Posts { get; }
+
         IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity;
 
         Task<int> SaveChangesAsync(CancellationToken ct = default);
+        IFollowRepository Follows { get; }
+        INotificationRepository Notifications { get; }
     }
 }
