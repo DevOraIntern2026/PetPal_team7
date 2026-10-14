@@ -9,6 +9,7 @@ abstract final class AppColors {
   // ── Brand ───────────────────────────────────────────────────────────────
   /// Main teal: buttons, links, borders, active states.
   static const Color primary = Color(0xFF31A8C3);
+  
 
   /// Light teal: search field on product details, disabled primary.
   static const Color primaryLight = Color(0xFFC1E5ED);
