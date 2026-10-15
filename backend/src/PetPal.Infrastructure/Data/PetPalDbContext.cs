@@ -50,8 +50,11 @@ namespace PetPal.Infrastructure.Data
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<PostImage> PostImages => Set<PostImage>();
         public DbSet<Comment> Comments => Set<Comment>();
+        public DbSet<UserFollow> UserFollows => Set<UserFollow>();
+        public DbSet<SavedPost> SavedPosts => Set<SavedPost>();
         public DbSet<PostLike> PostLikes => Set<PostLike>();
         public DbSet<LostPetAlert> LostPetAlerts => Set<LostPetAlert>();
+        public DbSet<Notification> Notifications { get; set; }
 
         // AI
         public DbSet<AIConversation> AIConversations => Set<AIConversation>();

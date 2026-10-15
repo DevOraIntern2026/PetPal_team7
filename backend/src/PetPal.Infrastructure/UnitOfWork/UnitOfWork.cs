@@ -8,7 +8,7 @@ using PetPal.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PetPal.Infrastructure.Data
@@ -30,6 +30,14 @@ namespace PetPal.Infrastructure.Data
         private ICartRepository? _carts;
         private IOrderRepository? _orders;
         private IAdoptionRepository? _adoptions;
+
+        private IPostRepository? _posts;
+
+        private IFollowRepository? _follows;
+        public IFollowRepository Follows => _follows ??= new FollowRepository(_context);
+
+        private INotificationRepository? _notifications;
+        public INotificationRepository Notifications => _notifications ??= new NotificationRepository(_context);
 
         public UnitOfWork(PetPalDbContext context) => _context = context;
 
@@ -53,6 +61,8 @@ namespace PetPal.Infrastructure.Data
         public IOrderRepository Orders => _orders ??= new OrderRepository(_context);
 
         public IAdoptionRepository Adoptions => _adoptions ??= new AdoptionRepository(_context);
+
+        public IPostRepository Posts => _posts ??= new PostRepository(_context);
 
         public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
         {

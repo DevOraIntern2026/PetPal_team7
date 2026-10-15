@@ -23,14 +23,14 @@ namespace PetPal.Application.Interfaces
         IOrderRepository Orders { get; }
         IAdoptionRepository Adoptions { get; }
 
+        IPostRepository Posts { get; }
+        IFollowRepository Follows { get; }
+        INotificationRepository Notifications { get; }
+
         IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity;
 
         Task<int> SaveChangesAsync(CancellationToken ct = default);
 
-        /// <summary>
-        /// Saves and returns false (instead of throwing) when a unique-index or concurrency conflict occurs.
-        /// Used to turn race-condition losers into a clean 409.
-        /// </summary>
         Task<bool> TrySaveChangesAsync(CancellationToken ct = default);
 
         /// <summary>Runs the action in one database transaction; any exception rolls everything back.</summary>
