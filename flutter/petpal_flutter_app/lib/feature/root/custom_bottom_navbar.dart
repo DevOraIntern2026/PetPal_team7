@@ -1,20 +1,21 @@
-
 import 'package:flutter/material.dart';
+import 'package:petpal_flutter_app/core/constants/app_colors.dart';
+import 'package:petpal_flutter_app/feature/root/root_view.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
-  final int current_index;
-  final ValueChanged<int> on_tap;
-
   const CustomBottomNavigationBar({
     super.key,
-    required this.current_index,
-    required this.on_tap,
+    required this.currentIndex,
+    required this.onTap,
   });
+
+  final int currentIndex;
+  final ValueChanged<int> onTap;
 
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 0,
       shape: const CircularNotchedRectangle(),
       notchMargin: 8,
@@ -24,36 +25,37 @@ class CustomBottomNavigationBar extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: _build_item(
+              child: _buildItem(
                 icon: Icons.home_outlined,
-                active_icon: Icons.home_rounded,
+                activeIcon: Icons.home_rounded,
                 label: 'Home',
-                index: 0,
+                index: RootTab.home,
               ),
             ),
             Expanded(
-              child: _build_item(
+              child: _buildItem(
                 icon: Icons.favorite_border_rounded,
-                active_icon: Icons.favorite_rounded,
+                activeIcon: Icons.favorite_rounded,
                 label: 'Favorites',
-                index: 1,
+                index: RootTab.favorites,
               ),
             ),
+            // Room for the docked center button (Pets tab).
             const SizedBox(width: 56),
             Expanded(
-              child: _build_item(
+              child: _buildItem(
                 icon: Icons.storefront_outlined,
-                active_icon: Icons.storefront_rounded,
+                activeIcon: Icons.storefront_rounded,
                 label: 'Shop',
-                index: 3,
+                index: RootTab.shop,
               ),
             ),
             Expanded(
-              child: _build_item(
+              child: _buildItem(
                 icon: Icons.person_outline_rounded,
-                active_icon: Icons.person_rounded,
+                activeIcon: Icons.person_rounded,
                 label: 'Profile',
-                index: 4,
+                index: RootTab.profile,
               ),
             ),
           ],
@@ -62,17 +64,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 
-  Widget _build_item({
+  Widget _buildItem({
     required IconData icon,
-    required IconData active_icon,
+    required IconData activeIcon,
     required String label,
     required int index,
   }) {
-    final bool is_selected = current_index == index;
-    const Color primary_color = Color(0xFF27AEC5);
+    final bool isSelected = currentIndex == index;
+    final Color color =
+        isSelected ? AppColors.primary : AppColors.textSecondary;
 
     return InkWell(
-      onTap: () => on_tap(index),
+      onTap: () => onTap(index),
       borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7),
@@ -80,19 +83,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              is_selected ? active_icon : icon,
-              size: 25,
-              color: is_selected ? primary_color : const Color(0xFF536071),
-            ),
+            Icon(isSelected ? activeIcon : icon, size: 25, color: color),
             const SizedBox(height: 3),
             Text(
               label,
               maxLines: 1,
               style: TextStyle(
                 fontSize: 10,
-                color: is_selected ? primary_color : const Color(0xFF536071),
-                fontWeight: is_selected ? FontWeight.w600 : FontWeight.w400,
+                color: color,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ],

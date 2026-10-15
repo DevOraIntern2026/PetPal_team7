@@ -1,28 +1,25 @@
-
 import 'package:flutter/material.dart';
-import 'mood_card.dart';
+import 'package:petpal_flutter_app/core/constants/app_assets.dart';
+import 'package:petpal_flutter_app/feature/home/widgets/mood/mood_card.dart';
 
 class MoodSection extends StatelessWidget {
   const MoodSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Mood',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 6),
-        const MoodCard(
-          pet_name: 'Rosie',
+        SizedBox(height: 6),
+        MoodCard(
+          petName: 'Rosie',
           description:
               'A happy and playful dog who loves spending time with people.',
-          image_path: 'assets/images/animals/happy_dog.jpeg',
+          imagePath: AppAssets.happyDog,
         ),
       ],
     );

@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+import 'package:petpal_flutter_app/core/constants/app_assets.dart';
+import 'package:petpal_flutter_app/core/constants/app_colors.dart';
 
 class AdoptionBanner extends StatelessWidget {
   const AdoptionBanner({super.key});
@@ -10,7 +11,7 @@ class AdoptionBanner extends StatelessWidget {
       height: 120,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F9E8),
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(20),
       ),
       clipBehavior: Clip.antiAlias,
@@ -22,7 +23,7 @@ class AdoptionBanner extends StatelessWidget {
             top: 0,
             width: 125,
             child: Image.asset(
-              'assets/images/animals/adoption_dog.png',
+              AppAssets.adoptionDog,
               fit: BoxFit.cover,
               alignment: Alignment.center,
             ),
@@ -49,7 +50,7 @@ class AdoptionBanner extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 9,
                       height: 1,
-                      color: Colors.grey,
+                      color: AppColors.textSecondary,
                     ),
                     maxLines: 2,
                   ),
@@ -58,18 +59,13 @@ class AdoptionBanner extends StatelessWidget {
                     height: 26,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navigate to the adoption screen.
+                        // TODO: navigate to the adoption screen.
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2BAAC0),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         shape: const StadiumBorder(),
-                        elevation: 0,
                       ),
                       child: const Text(
                         'Browse Adoptions',

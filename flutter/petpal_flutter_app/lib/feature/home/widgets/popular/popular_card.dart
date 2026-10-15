@@ -1,17 +1,17 @@
-
 import 'package:flutter/material.dart';
+import 'package:petpal_flutter_app/core/constants/app_colors.dart';
 
 class PopularCard extends StatelessWidget {
-  final String image_path;
-  final String name;
-  final String subtitle;
-
   const PopularCard({
     super.key,
-    required this.image_path,
+    required this.imagePath,
     required this.name,
     required this.subtitle,
   });
+
+  final String imagePath;
+  final String name;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +21,18 @@ class PopularCard extends StatelessWidget {
         children: [
           ClipOval(
             child: Image.asset(
-              image_path,
+              imagePath,
               width: 60,
               height: 60,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stack_trace) {
+              errorBuilder: (context, error, stackTrace) {
                 return Container(
                   width: 60,
                   height: 60,
-                  color: const Color(0xFFF3F3F3),
+                  color: AppColors.surfaceVariant,
                   child: const Icon(
                     Icons.pets,
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                   ),
                 );
               },
@@ -60,7 +60,7 @@ class PopularCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 11,
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],

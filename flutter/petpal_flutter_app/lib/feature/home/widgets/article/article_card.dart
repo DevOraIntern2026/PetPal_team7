@@ -1,17 +1,17 @@
-
 import 'package:flutter/material.dart';
+import 'package:petpal_flutter_app/core/constants/app_colors.dart';
 
 class ArticleCard extends StatelessWidget {
-  final String image_path;
-  final String title;
-  final String description;
-
   const ArticleCard({
     super.key,
-    required this.image_path,
+    required this.imagePath,
     required this.title,
     required this.description,
   });
+
+  final String imagePath;
+  final String title;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ArticleCard extends StatelessWidget {
         children: [
           ClipOval(
             child: Image.asset(
-              image_path,
+              imagePath,
               width: 56,
               height: 56,
               fit: BoxFit.cover,
@@ -50,7 +50,7 @@ class ArticleCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 10,
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],

@@ -70,6 +70,18 @@ abstract final class AppTextStyles {
     height: 1.3,
   );
 
+  /// Serif display style used by "Choose your pet" and its tiles.
+  /// Placeholder: the Figma font for it is not identified yet, so it falls
+  /// back to the first serif found on the device. Replace `fontFamily` once
+  /// the real font file is added.
+  static const TextStyle display = TextStyle(
+    fontFamily: 'Georgia',
+    fontFamilyFallback: ['Cambria', 'Times New Roman', 'serif'],
+    fontSize: 32,
+    fontWeight: FontWeight.w700,
+    height: 1.2,
+  );
+
   /// Maps the styles above onto Material's [TextTheme] so default widgets
   /// (`Text`, `ListTile`, `AppBar`...) pick them up.
   static const TextTheme textTheme = TextTheme(

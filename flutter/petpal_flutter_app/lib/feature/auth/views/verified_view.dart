@@ -6,7 +6,7 @@ import 'package:petpal_flutter_app/core/navigation/fade_route.dart';
 import 'package:petpal_flutter_app/core/responsive/responsive.dart';
 import 'package:petpal_flutter_app/core/theme/app_text_styles.dart';
 import 'package:petpal_flutter_app/feature/auth/widgets/auth_page.dart';
-import 'package:petpal_flutter_app/feature/home/views/home_view.dart';
+import 'package:petpal_flutter_app/feature/root/root_view.dart';
 
 /// Success screen. Continues to Home by itself after a moment.
 class VerifiedView extends StatefulWidget {
@@ -28,7 +28,7 @@ class _VerifiedViewState extends State<VerifiedView> {
   void _goHome() {
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      fadeRoute(HomeView()),
+      fadeRoute(const RootView()),
       (route) => false,
     );
   }
