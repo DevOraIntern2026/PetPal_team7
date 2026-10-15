@@ -7,6 +7,14 @@ import { LuLock } from "react-icons/lu";
 import { useAuth } from "../../lib/auth/AuthContext";
 
 const COPY = {
+  vets: {
+    title: "Sign in to book",
+    text: "You need to sign in or create an account before booking an appointment with a veterinarian.",
+  },
+  appointment: {
+    title: "Sign in to book",
+    text: "You need to sign in or create an account before booking an appointment with a veterinarian.",
+  },
   shop: {
     title: "Sign in to shop",
     text: "Log in or create a free account to add items to your cart and check out.",
@@ -22,11 +30,12 @@ const COPY = {
 };
 
 export default function AuthGuardModal() {
-  const { promptReason, closePrompt } = useAuth();
+  const { promptReason, promptRedirect, closePrompt } = useAuth();
   const pathname = usePathname();
   const ref = useRef(null);
   const copy = COPY[promptReason] ?? COPY.default;
-  const next = encodeURIComponent(pathname);
+  const targetPath = promptRedirect || pathname;
+  const next = encodeURIComponent(targetPath);
 
   useEffect(() => {
     const dialog = ref.current;

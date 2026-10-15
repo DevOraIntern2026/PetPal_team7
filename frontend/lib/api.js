@@ -1,7 +1,12 @@
 import axios from "axios";
 import { clearSession, readSession } from "./auth/session";
 
-export const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL });
+export const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "",
+  headers: {
+    "X-Tunnel-Skip-Anti-Abuse-Page": "true",
+  },
+});
 
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
@@ -41,3 +46,72 @@ export function getErrorMessage(
     fallback
   );
 }
+
+export const doctorsApi = {
+  async list({ specialty, page = 1, pageSize = 100 } = {}, signal) {
+    const params = { page, pageSize };
+    if (specialty && specialty !== "All Specialties") {
+      params.specialty = specialty;
+    }
+
+    const { data } = await api.get("/api/doctors", {
+      params,
+      signal,
+    });
+
+    return data;
+  },
+
+  async get(id, signal) {
+    const { data } = await api.get(`/api/doctors/${id}`, {
+      signal,
+    });
+
+    return data;
+  },
+
+  async availability(id, date, signal) {
+    const { data } = await api.get(`/api/doctors/${id}/availability`, {
+      params: { date },
+      signal,
+    });
+
+    return data;
+  },
+};
+
+export const appointmentsApi = {
+  async book(appointmentData) {
+    const { data } = await api.post("/api/appointments", appointmentData);
+
+    return data;
+  },
+
+  async mine(signal) {
+    try {
+      const { data } = await api.get("/api/appointments/my", {
+        signal,
+      });
+      return data;
+    } catch (err) {
+      if (err.response?.status === 404) {
+        const { data } = await api.get("/api/appointments", { signal });
+        return data;
+      }
+      throw err;
+    }
+  },
+
+  async get(id, signal) {
+    const { data } = await api.get(`/api/appointments/${id}`, {
+      signal,
+    });
+
+    return data;
+  },
+
+  async cancel(id) {
+    const { data } = await api.delete(`/api/appointments/${id}`);
+    return data;
+  },
+};

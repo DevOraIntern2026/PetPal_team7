@@ -28,6 +28,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
   const [promptReason, setPromptReason] = useState(null);
+  const [promptRedirect, setPromptRedirect] = useState(null);
 
   useEffect(() => {
     setUser(readSession()?.user ?? null);
@@ -95,28 +96,34 @@ export function AuthProvider({ children }) {
   }, []);
 
   const requireAuth = useCallback(
-    (reason, action) => {
+    (reason, action, redirectUrl) => {
       if (user) {
         action?.();
         return true;
       }
       setPromptReason(reason ?? "default");
+      setPromptRedirect(redirectUrl ?? null);
       return false;
     },
     [user],
   );
 
-  const closePrompt = useCallback(() => setPromptReason(null), []);
+  const closePrompt = useCallback(() => {
+    setPromptReason(null);
+    setPromptRedirect(null);
+  }, []);
 
   const value = useMemo(
     () => ({
       user,
       ready,
+      isAuthenticated: Boolean(user),
       login,
       signup,
       logout,
       requireAuth,
       promptReason,
+      promptRedirect,
       closePrompt,
     }),
     [
@@ -127,6 +134,7 @@ export function AuthProvider({ children }) {
       logout,
       requireAuth,
       promptReason,
+      promptRedirect,
       closePrompt,
     ],
   );
