@@ -17,5 +17,6 @@ namespace PetPal.Application.Settings
         public string Audience { get; set; } = null!;
 
         public int DurationInMinutes { get; set; }
+        public int RefreshTokenDurationInDays { get; set; } = 30;
     }
 }

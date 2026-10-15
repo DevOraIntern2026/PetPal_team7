@@ -9,6 +9,8 @@ namespace PetPal.Application.Interfaces
 {
     public interface ITokenService
     {
-        TokenResult GenerateToken(Guid userId, string email, string fullName);
+        TokenResult GenerateToken(Guid userId, string email, string fullName, IEnumerable<string>? roles = null);
+        string GenerateRefreshToken();
+        string HashRefreshToken(string refreshToken);
     }
 }

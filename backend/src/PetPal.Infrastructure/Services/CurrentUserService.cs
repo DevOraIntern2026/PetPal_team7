@@ -31,5 +31,7 @@ namespace PetPal.Infrastructure.Services
         public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
 
         public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
+
+        public bool IsAdmin => _httpContextAccessor.HttpContext?.User?.IsInRole(PetPal.Application.Constants.Roles.Admin) == true;
     }
 }

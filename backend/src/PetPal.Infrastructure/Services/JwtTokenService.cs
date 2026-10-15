@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace PetPal.Infrastructure.Services
             _jwtSettings = jwtSettings;
         }
 
-        public TokenResult GenerateToken(Guid userId, string email, string fullName)
+        public TokenResult GenerateToken(Guid userId, string email, string fullName, IEnumerable<string>? roles = null)
         {
             var claims = new List<Claim>
             {
@@ -29,6 +30,9 @@ namespace PetPal.Infrastructure.Services
                 new(JwtRegisteredClaimNames.Email, email),
                 new(ClaimTypes.Name, fullName)
             };
+
+            foreach (var role in roles ?? Enumerable.Empty<string>())
+                claims.Add(new Claim(ClaimTypes.Role, role));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
 
@@ -51,5 +55,11 @@ namespace PetPal.Infrastructure.Services
                 ExpiresAt = expiresAt
             };
         }
+
+        public string GenerateRefreshToken()
+            => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)).Replace('+', '-').Replace('/', '_').TrimEnd('=');
+
+        public string HashRefreshToken(string refreshToken)
+            => Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
     }
 }

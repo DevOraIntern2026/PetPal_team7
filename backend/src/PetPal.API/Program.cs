@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using PetPal.Infrastructure.Data.Seed;
 using PetPal.Infrastructure.Exceptions;
 using PetPal.Infrastructure.Identity;
 using PetPal.Infrastructure.Services;
+using Scalar.AspNetCore;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -22,8 +24,19 @@ var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<
 
 builder.Services.AddSingleton(jwtSettings);
 
+// Scheduling: bind + validate at startup. SchedulingClock throws a clear error if the
+// time zone cannot be resolved (fail fast, no silent fallback).
+var schedulingSettings = builder.Configuration.GetSection(SchedulingSettings.SectionName).Get<SchedulingSettings>()
+    ?? throw new InvalidOperationException("Scheduling settings are missing (Scheduling:TimeZoneId).");
+
+var schedulingClock = new SchedulingClock(schedulingSettings);
+
+builder.Services.AddSingleton(schedulingSettings);
+builder.Services.AddSingleton<ISchedulingClock>(schedulingClock);
+
 builder.Services.AddDbContext<PetPalDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDataProtection();
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
@@ -35,7 +48,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 })
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<PetPalDbContext>()
-                .AddSignInManager();
+                .AddSignInManager()
+                .AddDefaultTokenProviders();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -49,6 +63,39 @@ builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IAdoptionService, AdoptionService>();
+builder.Services.AddScoped<IVaccinationService, VaccinationService>();
+
+var resendSettings = builder.Configuration.GetSection(ResendSettings.SectionName).Get<ResendSettings>()
+    ?? new ResendSettings();
+builder.Services.AddSingleton(resendSettings);
+
+// In Development without an API key, emails are written to the console instead of being sent.
+if (string.IsNullOrWhiteSpace(resendSettings.ApiKey))
+{
+    if (!builder.Environment.IsDevelopment())
+        throw new InvalidOperationException("Resend:ApiKey is missing.");
+
+    builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
+}
+else
+{
+    builder.Services.AddHttpClient<IEmailService, ResendEmailService>(
+        c => c.BaseAddress = new Uri("https://api.resend.com/"));
+}
+
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
+
+builder.Services.AddSingleton(builder.Configuration.GetSection(GoogleAuthSettings.SectionName).Get<GoogleAuthSettings>() ?? new GoogleAuthSettings());
+builder.Services.AddSingleton(builder.Configuration.GetSection(FacebookAuthSettings.SectionName).Get<FacebookAuthSettings>() ?? new FacebookAuthSettings());
+
+builder.Services.AddHttpClient<IExternalIdentityVerifier, ExternalIdentityVerifier>(
+    c => c.BaseAddress = new Uri("https://graph.facebook.com/"));
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -117,17 +164,32 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddOpenApi();
+builder.Services.Configure<ForwardedHeadersOptions>(o =>
+{
+    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    o.KnownNetworks.Clear();
+    o.KnownProxies.Clear();
+});
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 var app = builder.Build();
+app.UseForwardedHeaders();
+app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PetPalDbContext>();
     await db.Database.MigrateAsync();
     await PetPalDbSeeder.SeedAsync(db);
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider, builder.Configuration);
+}
+
+if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+{
+    using var scope = app.Services.CreateScope();
+    await scope.ServiceProvider.GetRequiredService<PetPalDbContext>().Database.MigrateAsync();
 }
 
 app.UseExceptionHandler();
@@ -136,8 +198,8 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

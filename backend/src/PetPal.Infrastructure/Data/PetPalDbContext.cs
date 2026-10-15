@@ -31,6 +31,21 @@ namespace PetPal.Infrastructure.Data
         public DbSet<VeterinaryService> VeterinaryServices => Set<VeterinaryService>();
         public DbSet<VetVisit> VetVisits => Set<VetVisit>();
 
+        // Doctors & appointments
+        public DbSet<Doctor> Doctors => Set<Doctor>();
+        public DbSet<DoctorWorkingHours> WorkingHours => Set<DoctorWorkingHours>();
+        public DbSet<Appointment> Appointments => Set<Appointment>();
+
+        // Store
+        public DbSet<Product> Products => Set<Product>();
+        public DbSet<Cart> Carts => Set<Cart>();
+        public DbSet<CartItem> CartItems => Set<CartItem>();
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
+        // Adoption
+        public DbSet<AdoptionListing> AdoptionListings => Set<AdoptionListing>();
+
         // Community
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<PostImage> PostImages => Set<PostImage>();
@@ -44,6 +59,10 @@ namespace PetPal.Infrastructure.Data
         // AI
         public DbSet<AIConversation> AIConversations => Set<AIConversation>();
         public DbSet<AIMessage> AIMessages => Set<AIMessage>();
+
+        // Auth
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<PasswordResetCode> PasswordResetCodes => Set<PasswordResetCode>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

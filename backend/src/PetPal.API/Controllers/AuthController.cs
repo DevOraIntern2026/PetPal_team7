@@ -10,10 +10,12 @@ namespace PetPal.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IPasswordResetService _passwordReset;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IPasswordResetService passwordReset)
         {
             _authService = authService;
+            _passwordReset = passwordReset;
         }
 
         [HttpPost("register")]
@@ -31,5 +33,38 @@ namespace PetPal.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("refresh")]
+        public async Task<ActionResult<AuthResponse>> Refresh(RefreshTokenRequest request)
+            => Ok(await _authService.RefreshAsync(request));
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(RefreshTokenRequest request)
+        {
+            await _authService.LogoutAsync(request);
+            return NoContent();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+        {
+            await _passwordReset.ForgotPasswordAsync(request);
+            return Ok(new { message = "If this email is registered, a reset code has been sent." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+        {
+            await _passwordReset.ResetPasswordAsync(request);
+            return NoContent();
+        }
+
+        [HttpPost("google")]
+        public async Task<IActionResult> Google(ExternalLoginRequest request)
+            => Ok(await _authService.GoogleLoginAsync(request));
+
+        [HttpPost("facebook")]
+        public async Task<IActionResult> Facebook(ExternalLoginRequest request)
+            => Ok(await _authService.FacebookLoginAsync(request));
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetPal.Application.DTOs.MedicalHistory;
 using PetPal.Application.Interfaces;
@@ -7,6 +8,7 @@ namespace PetPal.API.Controllers
 {
     [Route("api/pets/{petId:guid}/medical-history")]
     [ApiController]
+    [Authorize]
     public class MedicalHistoryController : ControllerBase
     {
         private readonly IMedicalHistoryService _service;

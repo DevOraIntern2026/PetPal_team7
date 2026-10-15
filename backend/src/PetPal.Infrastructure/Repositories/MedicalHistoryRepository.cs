@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PetPal.Application.Interfaces;
+using PetPal.Application.Interfaces.Repositories;
 using PetPal.Domain.Entities;
 using PetPal.Infrastructure.Data;
 using System;

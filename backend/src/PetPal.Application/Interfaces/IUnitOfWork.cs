@@ -10,16 +10,30 @@ namespace PetPal.Application.Interfaces
 {
     public interface IUnitOfWork
     {
+        IRefreshTokenRepository RefreshTokens { get; }
+        IPasswordResetCodeRepository PasswordResetCodes { get; }
         IPetRepository Pets { get; }
         IBreedRepository Breeds { get; }
         IMedicalHistoryRepository MedicalHistories { get; }
+        IVaccinationRepository Vaccinations { get; }
+        IDoctorRepository Doctors { get; }
+        IAppointmentRepository Appointments { get; }
+        IProductRepository Products { get; }
+        ICartRepository Carts { get; }
+        IOrderRepository Orders { get; }
+        IAdoptionRepository Adoptions { get; }
 
         IPostRepository Posts { get; }
+        IFollowRepository Follows { get; }
+        INotificationRepository Notifications { get; }
 
         IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity;
 
         Task<int> SaveChangesAsync(CancellationToken ct = default);
-        IFollowRepository Follows { get; }
-        INotificationRepository Notifications { get; }
+
+        Task<bool> TrySaveChangesAsync(CancellationToken ct = default);
+
+        /// <summary>Runs the action in one database transaction; any exception rolls everything back.</summary>
+        Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> action, CancellationToken ct = default);
     }
 }
