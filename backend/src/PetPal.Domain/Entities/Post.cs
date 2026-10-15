@@ -13,6 +13,9 @@ namespace PetPal.Domain.Entities
 
         public string Content { get; set; } = null!;
 
+        public string? Location { get; set; }
+        public string? Tags { get; set; }
+
         public ICollection<PostImage> Images { get; set; } = new List<PostImage>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<PostLike> Likes { get; set; } = new List<PostLike>();

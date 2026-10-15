@@ -4,9 +4,8 @@ using PetPal.Application.Exceptions;
 using PetPal.Application.Interfaces;
 using PetPal.Infrastructure.Identity;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PetPal.Infrastructure.Services
@@ -15,18 +14,29 @@ namespace PetPal.Infrastructure.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICurrentUserService _currentUser;
+        private readonly IUnitOfWork _unitOfWork; 
 
-        public UserService(UserManager<ApplicationUser> userManager, ICurrentUserService currentUser)
+        public UserService(UserManager<ApplicationUser> userManager, ICurrentUserService currentUser, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _currentUser = currentUser;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UserProfileDto> GetProfileAsync()
         {
             var user = await GetCurrentUserAsync();
 
-            return ToDto(user);
+            var followers = await _unitOfWork.Follows.GetFollowersAsync(user.Id, CancellationToken.None);
+            var following = await _unitOfWork.Follows.GetFollowingAsync(user.Id, CancellationToken.None);
+            var postsCount = await _unitOfWork.Posts.GetPostsCountAsync(user.Id, CancellationToken.None);
+
+            var dto = ToDto(user);
+            dto.PostsCount = postsCount;
+            dto.FollowersCount = followers.Count;
+            dto.FollowingCount = following.Count;
+
+            return dto;
         }
 
         public async Task<UserProfileDto> UpdateProfileAsync(UpdateProfileRequest request)
@@ -75,6 +85,7 @@ namespace PetPal.Infrastructure.Services
             FullName = user.FullName,
             Email = user.Email!,
             Country = user.Country,
+            Bio = user.Bio,
             ProfileImageUrl = user.ProfileImageUrl,
             CreatedAt = user.CreatedAt
         };

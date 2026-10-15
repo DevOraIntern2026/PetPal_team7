@@ -53,6 +53,12 @@ builder.Services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+builder.Services.AddScoped<IPostService, PostService>();
+
+builder.Services.AddScoped<IFollowService, FollowService>();
+
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("JWT Key is missing.");
 
@@ -135,6 +141,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PetPal.Application.DTOs.Users
 {
@@ -13,6 +9,13 @@ namespace PetPal.Application.DTOs.Users
         public string Email { get; set; } = null!;
         public string? Country { get; set; }
         public string? ProfileImageUrl { get; set; }
+
+        public string? Bio { get; set; } 
+
+        public int PostsCount { get; set; }
+        public int FollowersCount { get; set; }
+        public int FollowingCount { get; set; }
+
         public DateTime CreatedAt { get; set; }
     }
 }
