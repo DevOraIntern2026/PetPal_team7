@@ -1,30 +1,25 @@
-
 import 'package:flutter/material.dart';
+import 'package:petpal_flutter_app/core/constants/app_colors.dart';
 
 class MoodCard extends StatelessWidget {
-  final String pet_name;
-  final String description;
-  final String image_path;
-
   const MoodCard({
     super.key,
-    required this.pet_name,
+    required this.petName,
     required this.description,
-    required this.image_path,
+    required this.imagePath,
   });
+
+  final String petName;
+  final String description;
+  final String imagePath;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 88,
-      padding: const EdgeInsets.only(
-        left: 10,
-        top: 8,
-        bottom: 8,
-        right: 6,
-      ),
+      padding: const EdgeInsets.only(left: 10, top: 8, bottom: 8, right: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F9E8),
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(16),
       ),
       clipBehavior: Clip.antiAlias,
@@ -36,7 +31,7 @@ class MoodCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  pet_name,
+                  petName,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -50,7 +45,7 @@ class MoodCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 10,
-                      color: Colors.black54,
+                      color: AppColors.textSecondary,
                       height: 1.2,
                     ),
                   ),
@@ -63,14 +58,14 @@ class MoodCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.asset(
-              image_path,
+              imagePath,
               width: 78,
               height: double.infinity,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stack_trace) {
+              errorBuilder: (context, error, stackTrace) {
                 return Container(
                   width: 78,
-                  color: Colors.white,
+                  color: AppColors.surface,
                   child: const Icon(Icons.pets),
                 );
               },

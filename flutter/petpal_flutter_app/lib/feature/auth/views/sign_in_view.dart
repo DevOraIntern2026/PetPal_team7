@@ -12,7 +12,7 @@ import 'package:petpal_flutter_app/feature/auth/widgets/account_prompt.dart';
 import 'package:petpal_flutter_app/feature/auth/widgets/auth_page.dart';
 import 'package:petpal_flutter_app/feature/auth/widgets/auth_text_field.dart';
 import 'package:petpal_flutter_app/feature/auth/widgets/social_buttons.dart';
-import 'package:petpal_flutter_app/feature/home/views/home_view.dart';
+import 'package:petpal_flutter_app/feature/root/root_view.dart';
 
 class SignInView extends StatefulWidget {
   const SignInView({super.key});
@@ -38,7 +38,7 @@ class _SignInViewState extends State<SignInView> {
     if (!_formKey.currentState!.validate()) return;
     // TODO: call the login use case (Cubit) once the API is ready.
     Navigator.of(context).pushAndRemoveUntil(
-      fadeRoute(HomeView()),
+      fadeRoute(const RootView()),
       (route) => false,
     );
   }

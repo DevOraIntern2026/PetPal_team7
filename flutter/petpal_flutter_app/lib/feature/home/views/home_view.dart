@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:petpal_flutter_app/core/constants/app_assets.dart';
 import 'package:petpal_flutter_app/core/constants/app_colors.dart';
 import 'package:petpal_flutter_app/feature/home/widgets/adoption_banner.dart';
 import 'package:petpal_flutter_app/feature/home/widgets/article/articles_section.dart';
@@ -11,107 +11,118 @@ import 'package:petpal_flutter_app/feature/home/widgets/popular/popular_section.
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
+  static const OutlineInputBorder _searchBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(20)),
+    borderSide: BorderSide(color: AppColors.primary),
+  );
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         appBar: AppBar(
           title: Row(
             children: [
-              Row(
-                children: [
-                  Text("Pet ",style: TextStyle(color: AppColors.primary,fontWeight: FontWeight.bold,fontSize: 24),),
-                  Text("mate",style: TextStyle(color: AppColors.primary,),),
-                ],
+              const Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Pet ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(text: 'Mate'),
+                  ],
+                ),
+                style: TextStyle(color: AppColors.primary, fontSize: 24),
               ),
-              Spacer(),
-              Image.asset("assets/Icons/ai_Icon.png",
-              color: Colors.black,width: 30,),
-              Gap(5),
-              Icon(Icons.notifications,size: 30,color: Colors.black,)
+              const Spacer(),
+              Image.asset(
+                AppAssets.aiIcon,
+                color: AppColors.textPrimary,
+                width: 30,
+              ),
+              const Gap(5),
+              const Icon(
+                Icons.notifications,
+                size: 30,
+                color: AppColors.textPrimary,
+              ),
             ],
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Row(
+                const Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                    ),
+                    CircleAvatar(radius: 30),
                     Gap(10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Hi ,Nadeen",
-                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
-                  
+                        Text(
+                          'Hi, Nadeen',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Text("Egypt")
+                        Text('Egypt'),
                       ],
-                    )
+                    ),
                   ],
                 ),
-                Gap(20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                const Gap(20),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
                   child: TextField(
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search),
-                      hintText: "search for pets,vets,products....",
-                      
-                      border: OutlineInputBorder(
-                        
-                        
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                          color: AppColors.primary,
-                        ),
-                        
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                          color: AppColors.primary
-                        )
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                          
-                          color: AppColors.primary
-                        )
-                      ),
+                      hintText: 'search for pets,vets,products....',
+                      border: _searchBorder,
+                      enabledBorder: _searchBorder,
+                      focusedBorder: _searchBorder,
                     ),
                   ),
                 ),
-            
-                Gap(15),
-                SingleChildScrollView(
+                const Gap(15),
+                const SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      CustomService(image: "assets/Services/store.png",text: "Pet Shop",),
-                      CustomService(image: "assets/Services/paw-print.png",text: "Adoption",),
-                      CustomService(image: "assets/Services/stethoscope.png",text: "Vets",),
-                      CustomService(image: "assets/Services/users-round.png",text: "Community",)
-                    ]
-                    
+                      CustomService(
+                        image: AppAssets.serviceShop,
+                        text: 'Pet Shop',
+                      ),
+                      CustomService(
+                        image: AppAssets.serviceAdoption,
+                        text: 'Adoption',
+                      ),
+                      CustomService(
+                        image: AppAssets.serviceVets,
+                        text: 'Vets',
+                      ),
+                      CustomService(
+                        image: AppAssets.serviceCommunity,
+                        text: 'Community',
+                      ),
+                    ],
                   ),
                 ),
-                Gap(20),
-                AdoptionBanner(),
-                Gap(20),
-                ArticlesSection(),
-                PopularSection(),
-                Gap(20),
-                MoodSection(),
-                Gap(200),
+                const Gap(20),
+                const AdoptionBanner(),
+                const Gap(20),
+                const ArticlesSection(),
+                const PopularSection(),
+                const Gap(20),
+                const MoodSection(),
+                // Keeps the last card clear of the bottom navigation bar
+                // (the root Scaffold reports its height in the padding).
+                SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
               ],
             ),
           ),

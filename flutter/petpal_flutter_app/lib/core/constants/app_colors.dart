@@ -9,20 +9,24 @@ abstract final class AppColors {
   // ── Brand ───────────────────────────────────────────────────────────────
   /// Main teal: buttons, links, borders, active states.
   static const Color primary = Color(0xFF31A8C3);
-  
 
   /// Light teal: search field on product details, disabled primary.
   static const Color primaryLight = Color(0xFFC1E5ED);
 
-  /// Orange accent: "Sign up" outline, "Forget Password!" title.
+  /// Orange accent: "Sign up" outline, back arrows of the pet flow,
+  /// "Forget Password!" title.
   static const Color accent = Color(0xFFD16000);
 
   // ── Backgrounds ─────────────────────────────────────────────────────────
-  /// Cream: splash, auth screens, shop, bottom bar.
+  /// Cream: splash, auth screens, shop, pet flow, bottom bar.
   static const Color background = Color(0xFFF9FDE9);
 
-  /// White: vet, adoption and account screens, cards.
+  /// White: vet, adoption and account screens, cards, input fills.
   static const Color surface = Color(0xFFFFFFFF);
+
+  /// Near-white sheet that slides over the cream background
+  /// ("Choose your pet").
+  static const Color sheet = Color(0xFFFEFFFB);
 
   /// Light grey: reminder cards, vaccination cards.
   static const Color surfaceVariant = Color(0xFFEBEBEB);
@@ -38,6 +42,9 @@ abstract final class AppColors {
 
   // ── Lines ───────────────────────────────────────────────────────────────
   static const Color divider = Color(0xFFD9D9D9);
+
+  /// Ruled lines of the "History" text area.
+  static const Color line = Color(0xFFC7CABA);
 
   // ── Status ──────────────────────────────────────────────────────────────
   /// Rating star.

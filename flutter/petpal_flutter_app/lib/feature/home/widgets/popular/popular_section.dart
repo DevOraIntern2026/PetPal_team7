@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'popular_list.dart';
+import 'package:petpal_flutter_app/core/constants/app_colors.dart';
+import 'package:petpal_flutter_app/feature/home/widgets/popular/popular_list.dart';
 
 class PopularSection extends StatelessWidget {
   const PopularSection({super.key});
@@ -15,25 +15,19 @@ class PopularSection extends StatelessWidget {
           children: [
             const Text(
               'Popular',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
             TextButton(
               onPressed: () {
-                // Navigate to the full popular list.
+                // TODO: navigate to the full popular list.
               },
               style: TextButton.styleFrom(
-                foregroundColor: Colors.grey,
+                foregroundColor: AppColors.textSecondary,
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text(
-                'More',
-                style: TextStyle(fontSize: 12),
-              ),
+              child: const Text('More', style: TextStyle(fontSize: 12)),
             ),
           ],
         ),

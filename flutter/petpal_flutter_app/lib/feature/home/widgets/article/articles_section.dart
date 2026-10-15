@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'article_list.dart';
+import 'package:petpal_flutter_app/core/constants/app_colors.dart';
+import 'package:petpal_flutter_app/feature/home/widgets/article/article_list.dart';
 
 class ArticlesSection extends StatelessWidget {
   const ArticlesSection({super.key});
@@ -15,25 +15,19 @@ class ArticlesSection extends StatelessWidget {
           children: [
             const Text(
               'Article',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
             TextButton(
               onPressed: () {
-                // Open the full articles screen.
+                // TODO: open the full articles screen.
               },
               style: TextButton.styleFrom(
-                foregroundColor: Colors.grey,
+                foregroundColor: AppColors.textSecondary,
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text(
-                'More',
-                style: TextStyle(fontSize: 12),
-              ),
+              child: const Text('More', style: TextStyle(fontSize: 12)),
             ),
           ],
         ),
