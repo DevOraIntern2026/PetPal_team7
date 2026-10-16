@@ -2,21 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FaHeart, FaMapMarkerAlt } from "react-icons/fa";
-import { useAuth } from "../../lib/auth/AuthContext";
 
 export default function PetCard({ pet, isFav, onToggleFavorite }) {
-  const router = useRouter();
-  const { requireAuth } = useAuth();
-
   const detailsHref = `/adoption/${pet.id}`;
-
-  // Opens the sign-in modal if the user is not signed in
-  const handleAdopt = () => {
-    requireAuth("adopt", () => router.push(`/adoption/${pet.id}/apply`));
-  };
 
   return (
     <article className="flex flex-col overflow-hidden rounded-card bg-white shadow-card">
@@ -36,11 +26,17 @@ export default function PetCard({ pet, isFav, onToggleFavorite }) {
               src={pet.image}
               alt={pet.name}
               fill
+              unoptimized
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
               className="object-cover"
             />
           </motion.div>
         </Link>
+
+        {/* Price badge */}
+        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary-strong shadow-sm">
+          {pet.isFree ? "Free" : `${pet.price} EGP`}
+        </span>
 
         <button
           type="button"
@@ -57,6 +53,13 @@ export default function PetCard({ pet, isFav, onToggleFavorite }) {
             className={`h-4 w-4 ${isFav ? "text-accent-strong" : "text-ink-muted"}`}
           />
         </button>
+
+        {/* Status badge (only when not available) */}
+        {!pet.isAvailable && (
+          <span className="absolute bottom-3 left-3 rounded-full bg-primary-strong px-3 py-1 text-xs font-semibold text-white">
+            {pet.status}
+          </span>
+        )}
       </div>
 
       {/* Info */}
@@ -67,20 +70,16 @@ export default function PetCard({ pet, isFav, onToggleFavorite }) {
           </Link>
         </h3>
         <p className="text-sm text-ink-muted">
-          {pet.breed} · {pet.gender}
+          {pet.gender} · {pet.age}
         </p>
         <p className="mt-1 flex items-center gap-1 text-xs text-ink-muted">
           <FaMapMarkerAlt className="h-3 w-3 text-primary-strong" />
-          {pet.city}
+          {pet.location}
         </p>
 
-        <button
-          type="button"
-          onClick={handleAdopt}
-          className="btn-primary mt-4"
-        >
-          Adopt
-        </button>
+        <Link href={detailsHref} className="btn-primary mt-4 text-center">
+          View details
+        </Link>
       </div>
     </article>
   );
