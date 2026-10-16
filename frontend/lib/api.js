@@ -236,3 +236,119 @@ export const ordersApi = {
     return data;
   },
 };
+
+// User Profile API
+export const userApi = {
+  async getProfile(signal) {
+    const { data } = await api.get("/api/users/me", { signal });
+    return data;
+  },
+
+  async updateProfile({ fullName, country, bio, profileImageUrl }) {
+    const { data } = await api.put("/api/users/me", {
+      fullName,
+      country,
+      bio,
+      profileImageUrl,
+    });
+    return data;
+  },
+
+  async changePassword({ currentPassword, newPassword }) {
+    const { data } = await api.post("/api/users/me/change-password", {
+      currentPassword,
+      newPassword,
+    });
+    return data;
+  },
+};
+
+// Lookups API
+export const lookupsApi = {
+  async petTypes(signal) {
+    const { data } = await api.get("/api/lookups/pet-types", { signal });
+    return data;
+  },
+
+  async breeds(petTypeId, signal) {
+    if (!petTypeId) return [];
+    const { data } = await api.get(`/api/lookups/pet-types/${petTypeId}/breeds`, {
+      signal,
+    });
+    return data;
+  },
+};
+
+// Pets API
+export const petsApi = {
+  async list(signal) {
+    const { data } = await api.get("/api/pets", { signal });
+    return data;
+  },
+
+  async get(petId, signal) {
+    const { data } = await api.get(`/api/pets/${petId}`, { signal });
+    return data;
+  },
+
+  async create(petData) {
+    const { data } = await api.post("/api/pets", petData);
+    return data;
+  },
+
+  async update(petId, petData) {
+    const { data } = await api.put(`/api/pets/${petId}`, petData);
+    return data;
+  },
+
+  async delete(petId) {
+    const { data } = await api.delete(`/api/pets/${petId}`);
+    return data;
+  },
+
+  async medicalHistory(petId, signal) {
+    const { data } = await api.get(`/api/pets/${petId}/medical-history`, {
+      signal,
+    });
+    return data;
+  },
+
+  async addMedicalHistory(petId, { title, description }) {
+    const { data } = await api.post(`/api/pets/${petId}/medical-history`, {
+      title,
+      description,
+    });
+    return data;
+  },
+
+  async vaccinations(petId, signal) {
+    const { data } = await api.get(`/api/pets/${petId}/vaccinations`, {
+      signal,
+    });
+    return data;
+  },
+
+  async addVaccination(petId, { name, dateGiven, nextDueDate, notes }) {
+    const { data } = await api.post(`/api/pets/${petId}/vaccinations`, {
+      name,
+      dateGiven,
+      nextDueDate,
+      notes,
+    });
+    return data;
+  },
+};
+
+// Files API
+export const filesApi = {
+  async upload(file, type = "profiles") {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post(`/api/files/upload?type=${type}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  },
+};

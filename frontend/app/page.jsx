@@ -4,6 +4,7 @@ import VetSection from "../components/landing/VetSection";
 import ProductsSection from "../components/landing/ProductsSection";
 import AdoptionSection from "../components/landing/AdoptionSection";
 import WhyPetMate from "../components/landing/WhyPetMate";
+import Footer from "../components/landing/Footer";
 
 export default function Home() {
   return (
@@ -16,7 +17,7 @@ export default function Home() {
         <ProductsSection />
         <AdoptionSection />
       </main>
-
+      <Footer />
     </>
   );
 }
