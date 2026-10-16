@@ -11,6 +11,7 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = readSession()?.token;
+
     if (token) {
       if (config.headers?.set) {
         config.headers.set("Authorization", `Bearer ${token}`);
@@ -19,6 +20,7 @@ api.interceptors.request.use((config) => {
       }
     }
   }
+
   return config;
 });
 
@@ -30,8 +32,8 @@ api.interceptors.response.use(
     const isStoreOrCart =
       url.includes("/api/products") || url.includes("/api/cart");
 
-    // Do NOT clear user session on 401 from products or cart requests.
-    // Only clear session when an explicit user authentication verification fails.
+    // Do not clear the session when products or cart requests return 401.
+    // Clear it only when the current-user verification fails.
     if (
       err.response?.status === 401 &&
       !isAuthCall &&
@@ -42,6 +44,7 @@ api.interceptors.response.use(
       clearSession();
       window.dispatchEvent(new Event("petmate:unauthorized"));
     }
+
     return Promise.reject(err);
   },
 );
@@ -52,6 +55,7 @@ export function getErrorMessage(
 ) {
   const data = err?.response?.data;
   const firstValidation = data?.errors && Object.values(data.errors).flat()[0];
+
   return (
     firstValidation ??
     data?.message ??
@@ -61,9 +65,11 @@ export function getErrorMessage(
   );
 }
 
+// Doctors API
 export const doctorsApi = {
   async list({ specialty, page = 1, pageSize = 20 } = {}, signal) {
     const params = { page, pageSize };
+
     if (specialty && specialty !== "All Specialties") {
       params.specialty = specialty;
     }
@@ -94,9 +100,11 @@ export const doctorsApi = {
   },
 };
 
+// Appointments API
 export const appointmentsApi = {
   async book(appointmentData) {
     const { data } = await api.post("/api/appointments", appointmentData);
+
     return data;
   },
 
@@ -105,12 +113,17 @@ export const appointmentsApi = {
       const { data } = await api.get("/api/appointments/my", {
         signal,
       });
+
       return data;
     } catch (err) {
       if (err.response?.status === 404) {
-        const { data } = await api.get("/api/appointments", { signal });
+        const { data } = await api.get("/api/appointments", {
+          signal,
+        });
+
         return data;
       }
+
       throw err;
     }
   },
@@ -125,16 +138,20 @@ export const appointmentsApi = {
 
   async cancel(id) {
     const { data } = await api.delete(`/api/appointments/${id}`);
+
     return data;
   },
 };
 
+// Products API
 export const productsApi = {
   async list({ category, search, page = 1, pageSize = 20 } = {}, signal) {
     const params = { page, pageSize };
+
     if (category && category !== "All") {
       params.category = category;
     }
+
     if (search && search.trim()) {
       params.search = search.trim();
     }
@@ -156,9 +173,11 @@ export const productsApi = {
   },
 };
 
+// Cart API
 export const cartApi = {
   async get(signal) {
     const { data } = await api.get("/api/cart", { signal });
+
     return data;
   },
 
@@ -167,6 +186,7 @@ export const cartApi = {
       productId,
       quantity,
     });
+
     return data;
   },
 
@@ -174,36 +194,45 @@ export const cartApi = {
     const { data } = await api.put(`/api/cart/items/${productId}`, {
       quantity,
     });
+
     return data;
   },
 
   async removeItem(productId) {
     const { data } = await api.delete(`/api/cart/items/${productId}`);
+
     return data;
   },
 
   async clear() {
     const { data } = await api.delete("/api/cart");
+
     return data;
   },
 };
 
+// Orders API
 export const ordersApi = {
   async checkout({ deliveryAddress, paymentMethod = "Cash" }) {
     const { data } = await api.post("/api/orders/checkout", {
       deliveryAddress,
       paymentMethod,
     });
+
     return data;
   },
 
   async mine(signal) {
     const { data } = await api.get("/api/orders/my", { signal });
+
     return data;
   },
 
   async get(id, signal) {
-    const { data } = await api.get(`/api/orders/${id}`, { signal });
+    const { data } = await api.get(`/api/orders/${id}`, {
+      signal,
+    });
+
     return data;
   },
 };

@@ -51,14 +51,14 @@ function toSession(data, fallbackEmail = "", fallbackName = "") {
 }
 
 export function AuthProvider({ children }) {
-  // Same initial state on the server and the client.
+  // Keep the initial state identical on the server and client.
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
   const [promptReason, setPromptReason] = useState(null);
   const [promptRedirect, setPromptRedirect] = useState(null);
 
   useEffect(() => {
-    // Read the saved session only after the component mounts.
+    // Read the saved session after mounting to avoid hydration mismatches.
     setUser(readSession()?.user ?? null);
     setReady(true);
 
@@ -93,7 +93,8 @@ export function AuthProvider({ children }) {
       };
     } else {
       try {
-        session = toSession(await authApi.login({ email, password }), email);
+        const data = await authApi.login({ email, password });
+        session = toSession(data, email);
       } catch (err) {
         throw new Error(
           getErrorMessage(err, "Couldn't log in. Please try again."),
@@ -116,7 +117,11 @@ export function AuthProvider({ children }) {
       session = {
         token: "mock",
         expiresAt: null,
-        user: { id: "demo", name, email },
+        user: {
+          id: "demo",
+          name,
+          email,
+        },
       };
     } else {
       try {
@@ -134,7 +139,7 @@ export function AuthProvider({ children }) {
           data?.data?.accessToken ??
           data?.data?.jwt;
 
-        // If registration doesn't return a token, log in afterward.
+        // Log in after registration if the signup response has no token.
         if (!hasToken) {
           data = await authApi.login({ email, password });
         }
@@ -165,6 +170,8 @@ export function AuthProvider({ children }) {
 
   const requireAuth = useCallback(
     (reason, action, redirectUrl) => {
+      // Use the context user first, then check the saved session
+      // once initialization is complete.
       const activeUser = user || (ready ? readSession()?.user : null);
 
       if (activeUser) {
