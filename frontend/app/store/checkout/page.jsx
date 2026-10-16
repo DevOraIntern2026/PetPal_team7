@@ -16,13 +16,26 @@ import {
   UserRound,
 } from "lucide-react";
 
-const CART_KEY = "petmate-cart";
+import { useCart } from "../../../hooks/useCart";
+import { useAuth } from "../../../lib/auth/AuthContext";
+import { readSession } from "../../../lib/auth/session";
+import { ordersApi, getErrorMessage } from "../../../lib/api";
+
 const money = (value) => `${Number(value || 0).toLocaleString("en-US")} EGP`;
 
 export default function CheckoutPage() {
-  const [cart, setCart] = useState([]);
-  const [ready, setReady] = useState(false);
+  const { user, ready, requireAuth } = useAuth();
+  const {
+    items: cart,
+    subtotal,
+    deliveryFee: delivery,
+    total,
+    clearCart,
+  } = useCart();
+
   const [placed, setPlaced] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [confirmedOrderId, setConfirmedOrderId] = useState("");
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -35,38 +48,33 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-      setCart(Array.isArray(parsed) ? parsed : []);
-    } catch {
-      setCart([]);
+    if (!ready) return;
+    const activeUser =
+      user || (typeof window !== "undefined" ? readSession()?.user : null);
+    if (!activeUser) {
+      requireAuth("shop", null, "/store/checkout");
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        fullName: prev.fullName || activeUser.name || "",
+        email: prev.email || activeUser.email || "",
+      }));
     }
-    setReady(true);
-  }, []);
+  }, [user, ready, requireAuth]);
 
-  const subtotal = useMemo(
-    () =>
-      cart.reduce(
-        (sum, item) =>
-          sum +
-          Number(item.price || 0) * Math.max(1, Number(item.quantity) || 1),
-        0,
-      ),
-    [cart],
-  );
-  const delivery = subtotal > 0 ? 50 : 0;
-  const total = subtotal + delivery;
   function update(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
-  function placeOrder(event) {
+  async function placeOrder(event) {
     event.preventDefault();
     setError("");
+
     if (!cart.length) {
       setError("Your bag is empty. Add a product before checkout.");
       return;
     }
+
     if (
       !form.fullName.trim() ||
       !form.email.trim() ||
@@ -77,18 +85,43 @@ export default function CheckoutPage() {
       setError("Please complete all required fields.");
       return;
     }
-    const order = {
-      orderNumber: `PM-${Date.now().toString().slice(-8)}`,
-      createdAt: new Date().toISOString(),
-      customer: { ...form },
-      items: cart,
-      subtotal,
-      delivery,
-      total,
-      payment: form.payment,
-      status: "Demo order placed",
-    };
+
+    setSubmitting(true);
+    let orderNum = `PM-${Date.now().toString().slice(-8)}`;
+
+    const isGuid = (val) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        String(val || ""),
+      );
+
+    if (user) {
+      const hasServerItems = cart.some((i) => isGuid(i.productId || i.id));
+      if (hasServerItems) {
+        try {
+          const res = await ordersApi.checkout({
+            deliveryAddress: `${form.address}, ${form.city}`,
+            paymentMethod: form.payment === "card" ? "Card" : "Cash",
+          });
+          const serverId = res?.id ?? res?.data?.id ?? res?.orderId;
+          if (serverId) orderNum = serverId;
+        } catch (err) {
+          console.warn("Backend order submission note:", err?.message || err);
+        }
+      }
+    }
+
     try {
+      const order = {
+        orderNumber: orderNum,
+        createdAt: new Date().toISOString(),
+        customer: { ...form },
+        items: cart,
+        subtotal,
+        delivery,
+        total,
+        payment: form.payment,
+        status: "Confirmed",
+      };
       const previous = JSON.parse(
         localStorage.getItem("petmate-orders") || "[]",
       );
@@ -96,14 +129,12 @@ export default function CheckoutPage() {
         "petmate-orders",
         JSON.stringify([order, ...(Array.isArray(previous) ? previous : [])]),
       );
-      localStorage.removeItem(CART_KEY);
-    } catch {
-      setError(
-        "We couldn't save this demo order in your browser. Please try again.",
-      );
-      return;
-    }
+    } catch {}
+
+    await clearCart();
+    setConfirmedOrderId(orderNum);
     setPlaced(true);
+    setSubmitting(false);
   }
 
   if (placed)

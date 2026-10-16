@@ -5,7 +5,10 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { ShoppingBag } from "lucide-react";
 import MobileMenu, { MobileMenuButton } from "./MobileMenu";
+import { useAuth } from "../../lib/auth/AuthContext";
+import { useCart } from "../../hooks/useCart";
 
 const links = [
   { label: "HOME", href: "/" },
@@ -19,9 +22,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  const { user, logout, ready } = useAuth();
+  const { itemCount } = useCart();
+
   return (
     <motion.nav
-      initial={{ y: -40, opacity: 0 }}
+      initial={{ y: -40, opacity: 1 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="relative z-40 bg-white px-4 py-4 shadow-sm md:h-20 md:px-10"
@@ -30,12 +36,13 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-xl leading-none">
           <Image
-            src="/logo.png"
+            src="/images/landing/logo.png"
             alt="Pet Mate Logo"
             width={40}
             height={40}
             className="h-10 w-10 object-contain"
           />
+
           <span className="font-bold text-ink">
             Pet <span className="font-medium text-primary">Mate</span>
           </span>
@@ -60,21 +67,61 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop auth buttons */}
+        {/* Desktop actions */}
         <div className="hidden items-center gap-4 text-xs font-semibold md:flex">
-          <Link href="/login" className="transition hover:text-primary">
-            LOGIN
-          </Link>
+          {/* Shopping bag */}
           <Link
-            href="/signup"
-            className="rounded-full bg-primary-strong px-5 py-2 text-white transition hover:scale-105 hover:bg-primary-deep active:scale-95"
+            href="/store/cart"
+            aria-label="View shopping bag"
+            className="relative flex items-center gap-1.5 rounded-full border border-primary/20 px-3 py-1.5 text-primary-strong transition hover:bg-primary-tint"
           >
-            SIGN UP
+            <ShoppingBag size={16} />
+
+            {ready && itemCount > 0 && (
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary-strong px-1 text-[10px] font-bold text-white">
+                {itemCount}
+              </span>
+            )}
           </Link>
+
+          {/* Auth buttons */}
+          {!ready ? (
+            <div aria-hidden="true" className="h-9 w-32" />
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <span className="font-medium text-ink">
+                {user.name?.split(" ")[0] || "User"}
+              </span>
+
+              <button
+                type="button"
+                onClick={logout}
+                className="text-ink-muted transition hover:text-rose-600"
+              >
+                LOGOUT
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link href="/login" className="transition hover:text-primary">
+                LOGIN
+              </Link>
+
+              <Link
+                href="/signup"
+                className="rounded-full bg-primary-strong px-5 py-2 text-white transition hover:scale-105 hover:bg-primary-deep active:scale-95"
+              >
+                SIGN UP
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
-        <MobileMenuButton open={open} onToggle={() => setOpen(!open)} />
+        <MobileMenuButton
+          open={open}
+          onToggle={() => setOpen((prev) => !prev)}
+        />
       </div>
 
       {/* Mobile menu */}
