@@ -272,9 +272,12 @@ export const lookupsApi = {
 
   async breeds(petTypeId, signal) {
     if (!petTypeId) return [];
-    const { data } = await api.get(`/api/lookups/pet-types/${petTypeId}/breeds`, {
-      signal,
-    });
+    const { data } = await api.get(
+      `/api/lookups/pet-types/${petTypeId}/breeds`,
+      {
+        signal,
+      },
+    );
     return data;
   },
 };
@@ -344,11 +347,54 @@ export const filesApi = {
   async upload(file, type = "profiles") {
     const formData = new FormData();
     formData.append("file", file);
-    const { data } = await api.post(`/api/files/upload?type=${type}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const { data } = await api.post(
+      `/api/files/upload?type=${type}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
+    );
+    return data;
+  },
+};
+
+// Adoption API
+export const adoptionApi = {
+  async list({ page = 1, pageSize = 20 } = {}, signal) {
+    const { data } = await api.get("/api/adoption", {
+      params: { page, pageSize },
+      signal,
     });
+    return data;
+  },
+
+  async get(id, signal) {
+    const { data } = await api.get(`/api/adoption/${id}`, { signal });
+    return data;
+  },
+
+  async mine({ page = 1, pageSize = 20 } = {}, signal) {
+    const { data } = await api.get("/api/adoption/my", {
+      params: { page, pageSize },
+      signal,
+    });
+    return data;
+  },
+
+  async create(listing) {
+    const { data } = await api.post("/api/adoption", listing);
+    return data;
+  },
+
+  async update(id, listing) {
+    const { data } = await api.put(`/api/adoption/${id}`, listing);
+    return data;
+  },
+
+  async remove(id) {
+    const { data } = await api.delete(`/api/adoption/${id}`);
     return data;
   },
 };
