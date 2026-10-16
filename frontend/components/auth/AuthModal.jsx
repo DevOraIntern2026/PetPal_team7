@@ -5,11 +5,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LuLock } from "react-icons/lu";
 import { useAuth } from "../../lib/auth/AuthContext";
+import { readSession } from "../../lib/auth/session";
 
 const COPY = {
   shop: {
-    title: "Sign in to shop",
-    text: "Log in or create a free account to add items to your cart and check out.",
+    title: "Sign in required",
+    subtitle: "يجب تسجيل الدخول أولاً",
+    text: "Please sign in or create an account first to add items to your cart and proceed to checkout.",
+  },
+  vets: {
+    title: "Sign in to book",
+    text: "You need an account to book an appointment with our veterinarians. It only takes a minute.",
+  },
+  appointment: {
+    title: "Sign in to book",
+    text: "You need an account to book an appointment with our veterinarians. It only takes a minute.",
   },
   adopt: {
     title: "Sign in to adopt",
@@ -22,18 +32,26 @@ const COPY = {
 };
 
 export default function AuthGuardModal() {
-  const { promptReason, closePrompt } = useAuth();
+  const { user, promptReason, promptRedirect, closePrompt } = useAuth();
   const pathname = usePathname();
   const ref = useRef(null);
   const copy = COPY[promptReason] ?? COPY.default;
-  const next = encodeURIComponent(pathname);
+  const targetPath = promptRedirect || pathname;
+  const next = encodeURIComponent(targetPath);
+
+  const activeUser =
+    user || (typeof window !== "undefined" ? readSession()?.user : null);
 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    if (promptReason && !dialog.open) dialog.showModal();
-    if (!promptReason && dialog.open) dialog.close();
-  }, [promptReason]);
+    if (promptReason && !activeUser && !dialog.open) {
+      dialog.showModal();
+    }
+    if ((!promptReason || activeUser) && dialog.open) {
+      dialog.close();
+    }
+  }, [promptReason, activeUser]);
 
   return (
     <dialog
@@ -51,6 +69,11 @@ export default function AuthGuardModal() {
           className="mb-2 font-display text-2xl font-semibold tracking-tight text-primary-strong">
           {copy.title}
         </h2>
+        {copy.subtitle && (
+          <p className="mb-3 text-sm font-bold text-primary-deep">
+            {copy.subtitle}
+          </p>
+        )}
         <p className="mx-auto mb-7 max-w-[34ch] leading-relaxed text-ink-muted">
           {copy.text}
         </p>

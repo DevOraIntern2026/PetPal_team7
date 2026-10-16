@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,70 +17,64 @@ import {
   ShoppingCart,
 } from "lucide-react";
 
-const CART_KEY = "petmate-cart";
+import { useCart } from "../../../hooks/useCart";
+import { useAuth } from "../../../lib/auth/AuthContext";
+import { readSession } from "../../../lib/auth/session";
+
 const FAVORITES_KEY = "petmate-favorites";
 const money = (value) => `${Number(value || 0).toLocaleString("en-US")} EGP`;
 
 export default function CartPage() {
-  const [cart, setCart] = useState([]);
+  const router = useRouter();
+  const { user, ready, requireAuth } = useAuth();
+  const {
+    items: cart,
+    itemCount,
+    subtotal,
+    deliveryFee: delivery,
+    total,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    loading,
+  } = useCart();
+
   const [favorites, setFavorites] = useState([]);
-  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     try {
-      const parsedCart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
       const parsedFavorites = JSON.parse(
         localStorage.getItem(FAVORITES_KEY) || "[]",
       );
-      setCart(Array.isArray(parsedCart) ? parsedCart : []);
       setFavorites(Array.isArray(parsedFavorites) ? parsedFavorites : []);
     } catch {
-      setCart([]);
       setFavorites([]);
     }
-    setReady(true);
   }, []);
 
-  const itemCount = cart.reduce(
-    (sum, item) => sum + Math.max(1, Number(item.quantity) || 1),
-    0,
-  );
-  const subtotal = useMemo(
-    () =>
-      cart.reduce(
-        (sum, item) =>
-          sum +
-          Number(item.price || 0) * Math.max(1, Number(item.quantity) || 1),
-        0,
-      ),
-    [cart],
-  );
-  const delivery = subtotal > 0 ? 50 : 0;
-  const total = subtotal + delivery;
-
-  function saveCart(next) {
-    setCart(next);
-    localStorage.setItem(CART_KEY, JSON.stringify(next));
-  }
-
   function changeQuantity(id, delta) {
-    saveCart(
-      cart.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity: Math.min(
-                99,
-                Math.max(1, (Number(item.quantity) || 1) + delta),
-              ),
-            }
-          : item,
-      ),
-    );
+    const item = cart.find((i) => i.id === id);
+    if (!item) return;
+    const currentQ = Number(item.quantity) || 1;
+    updateQuantity(id, currentQ + delta);
   }
 
   function removeItem(id) {
-    saveCart(cart.filter((item) => item.id !== id));
+    removeFromCart(id);
+  }
+
+  function handleCheckout() {
+    const activeUser =
+      user || (typeof window !== "undefined" ? readSession()?.user : null);
+    if (!activeUser) {
+      requireAuth(
+        "shop",
+        () => router.push("/store/checkout"),
+        "/store/checkout",
+      );
+      return;
+    }
+    router.push("/store/checkout");
   }
 
   function toggleFavorite(item) {
@@ -125,14 +120,12 @@ export default function CartPage() {
                 Shopping bag
               </h1>
               <p className="mt-2 text-ink-muted">
-                {ready
-                  ? `${itemCount} ${itemCount === 1 ? "item" : "items"} in your bag`
-                  : "Loading your bag…"}
+                {itemCount} {itemCount === 1 ? "item" : "items"} in your bag
               </p>
             </div>
-            {ready && cart.length > 0 && (
+            {cart.length > 0 && (
               <button
-                onClick={() => saveCart([])}
+                onClick={() => clearCart()}
                 className="text-sm font-bold text-ink-muted underline decoration-rose-200 underline-offset-4 transition hover:text-rose-600"
               >
                 Clear bag
@@ -141,7 +134,7 @@ export default function CartPage() {
           </div>
         </div>
 
-        {!ready ? (
+        {loading && cart.length === 0 ? (
           <div className="rounded-3xl border border-primary/10 bg-white p-10 text-center text-ink-muted">
             Loading your bag…
           </div>
@@ -179,8 +172,16 @@ export default function CartPage() {
                     className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_110px_110px] sm:items-center sm:gap-4 sm:px-6 sm:py-5"
                   >
                     <div className="flex min-w-0 items-center gap-4">
-                      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-primary-tint text-4xl sm:h-24 sm:w-24">
-                        {item.emoji || "🐾"}
+                      <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary-tint text-4xl sm:h-24 sm:w-24">
+                        {item.imageUrl ? (
+                          <img
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          item.emoji || "🐾"
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <Link
@@ -293,12 +294,13 @@ export default function CartPage() {
                 <span className="font-extrabold">Total</span>
                 <span className="text-2xl font-black">{money(total)}</span>
               </div>
-              <Link
-                href="/store/checkout"
+              <button
+                type="button"
+                onClick={handleCheckout}
                 className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary-strong px-5 py-3 font-extrabold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-primary-deep"
               >
                 Proceed to checkout <ArrowRight size={17} />
-              </Link>
+              </button>
               <div className="mt-4 flex items-start gap-2 rounded-2xl bg-primary-tint/60 p-3 text-xs leading-5 text-ink-muted">
                 <ShieldCheck
                   size={16}

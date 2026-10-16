@@ -14,141 +14,86 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const products = [
-  {
-    id: 1,
-    name: "Premium Pet Food",
-    category: "Food",
-    price: 420,
-    emoji: "🥣",
-    bg: "bg-[#e4f4f8]",
-    description: "Daily nutrition for happy, healthy pets.",
-    tag: "Bestseller",
-  },
-  {
-    id: 2,
-    name: "Interactive Toy",
-    category: "Toys",
-    price: 185,
-    emoji: "🧸",
-    bg: "bg-[#fff0e2]",
-    description: "Keep your little friend active and playful.",
-    tag: "Popular",
-  },
-  {
-    id: 3,
-    name: "Pet Care Kit",
-    category: "Care",
-    price: 290,
-    emoji: "🧴",
-    bg: "bg-[#f0f2df]",
-    description: "Everyday essentials for gentle pet care.",
-    tag: "",
-  },
-  {
-    id: 4,
-    name: "Cozy Pet Bed",
-    category: "Accessories",
-    price: 650,
-    emoji: "🛏️",
-    bg: "bg-[#f7e9e3]",
-    description: "A soft and cozy place to rest.",
-    tag: "New",
-  },
-  {
-    id: 5,
-    name: "Healthy Pet Treats",
-    category: "Food",
-    price: 120,
-    emoji: "🦴",
-    bg: "bg-[#f0f2df]",
-    description: "A tasty little reward for your best friend.",
-    tag: "",
-  },
-  {
-    id: 6,
-    name: "Playtime Ball",
-    category: "Toys",
-    price: 95,
-    emoji: "🎾",
-    bg: "bg-[#e4f4f8]",
-    description: "Made for everyday fun and activity.",
-    tag: "",
-  },
-];
-const categories = ["All", "Food", "Toys", "Care", "Accessories"];
-const CART_KEY = "petmate-cart";
+import { useProducts } from "../../hooks/useProducts";
+import { useCart } from "../../hooks/useCart";
+import { useAuth } from "../../lib/auth/AuthContext";
+import { readSession } from "../../lib/auth/session";
+
 const FAVORITES_KEY = "petmate-favorites";
 
+function getProductBg(product, index) {
+  if (product.bg) return product.bg;
+  const bgs = ["bg-[#e4f4f8]", "bg-[#fff0e2]", "bg-[#f0f2df]", "bg-[#f7e9e3]"];
+  return bgs[index % bgs.length];
+}
+
 export default function StorePage() {
+  const { user, requireAuth } = useAuth();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const [cart, setCart] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [toast, setToast] = useState(null);
 
+  const { products: apiProducts, loading: productsLoading } = useProducts({
+    category,
+    search,
+  });
+
+  const { itemCount: cartCount, addToCart } = useCart();
+
   useEffect(() => {
     try {
-      setCart(JSON.parse(localStorage.getItem(CART_KEY) || "[]"));
       setFavorites(JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]"));
     } catch {
-      setCart([]);
       setFavorites([]);
     }
   }, []);
 
-  const filteredProducts = useMemo(
-    () =>
-      products.filter((product) => {
-        const matchesCategory =
-          category === "All" || product.category === category;
-        const matchesSearch = product.name
-          .toLowerCase()
-          .includes(search.trim().toLowerCase());
-        return matchesCategory && matchesSearch;
-      }),
-    [category, search],
-  );
-
-  const cartCount = cart.reduce(
-    (sum, item) => sum + (Number(item.quantity) || 1),
-    0,
-  );
-
-  function addToCart(product) {
-    const currentCart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-    const existing = currentCart.find((item) => item.id === product.id);
-    const updated = existing
-      ? currentCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: (Number(item.quantity) || 1) + 1 }
-            : item,
-        )
-      : [
-          ...currentCart,
-          {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            emoji: product.emoji,
-            quantity: 1,
-          },
-        ];
-    localStorage.setItem(CART_KEY, JSON.stringify(updated));
-    setCart(updated);
-    setToast({
-      title: "Added to your bag!",
-      message: `${product.name} is ready for your pet.`,
-      product,
+  const categories = useMemo(() => {
+    const set = new Set(["All", "Food", "Toys", "Care", "Accessories"]);
+    apiProducts.forEach((p) => {
+      if (p.category) set.add(p.category);
     });
+    return Array.from(set);
+  }, [apiProducts]);
+
+  const filteredProducts = useMemo(() => {
+    return apiProducts.filter((product) => {
+      const matchesCategory =
+        category === "All" ||
+        String(product.category).toLowerCase() === category.toLowerCase();
+      const matchesSearch = String(product.name || "")
+        .toLowerCase()
+        .includes(search.trim().toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [apiProducts, category, search]);
+
+  async function handleAddToCart(product) {
+    const activeUser =
+      user || (typeof window !== "undefined" ? readSession()?.user : null);
+    if (!activeUser) {
+      await addToCart(product, 1, { promptAuthIfGuest: false });
+      requireAuth("shop", null, "/store/cart");
+      return;
+    }
+
+    const added = await addToCart(product, 1, { promptAuthIfGuest: false });
+    if (added) {
+      setToast({
+        title: "Added to your bag!",
+        message: `${product.name} is ready for your pet.`,
+        product,
+      });
+    }
   }
 
   function toggleFavorite(product) {
     const updated = favorites.includes(product.id)
       ? favorites.filter((id) => id !== product.id)
       : [...favorites, product.id];
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
     setFavorites(updated);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
     setToast({
       title: updated.includes(product.id)
         ? "Saved to favorites"
@@ -290,15 +235,17 @@ export default function StorePage() {
 
         {filteredProducts.length ? (
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredProducts.map((product) => {
+            {filteredProducts.map((product, index) => {
               const isFavorite = favorites.includes(product.id);
+              const bg = getProductBg(product, index);
+
               return (
                 <article
                   key={product.id}
                   className="group overflow-hidden rounded-[1.6rem] border border-primary/10 bg-white p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl"
                 >
                   <div
-                    className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[1.2rem] ${product.bg}`}
+                    className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[1.2rem] ${bg}`}
                   >
                     <div className="absolute -bottom-10 -right-8 h-32 w-32 rounded-full bg-white/40 transition group-hover:scale-125" />
                     {product.tag && (
@@ -325,9 +272,20 @@ export default function StorePage() {
                     <Link
                       href={`/store/${product.id}`}
                       aria-label={`View details for ${product.name}`}
-                      className="relative text-7xl drop-shadow-sm transition duration-300 group-hover:scale-110"
+                      className="relative flex h-full w-full items-center justify-center transition duration-300 group-hover:scale-105"
                     >
-                      {product.emoji}
+                      {product.imageUrl ? (
+                        <img
+                          src={product.imageUrl}
+                          alt={product.name}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="text-7xl drop-shadow-sm">
+                          {product.emoji || "🐾"}
+                        </span>
+                      )}
                     </Link>
                   </div>
                   <div className="px-2 pb-2 pt-4">
@@ -342,19 +300,19 @@ export default function StorePage() {
                         {product.name}
                       </Link>
                     </h3>
-                    <p className="mt-2 min-h-10 text-sm leading-5 text-ink-muted">
+                    <p className="mt-2 min-h-10 text-sm leading-5 text-ink-muted line-clamp-2">
                       {product.description}
                     </p>
                     <div className="mt-5 flex items-center justify-between gap-3">
                       <p className="text-xl font-black">
-                        {product.price.toLocaleString()}{" "}
+                        {Number(product.price || 0).toLocaleString()}{" "}
                         <span className="text-xs font-bold text-ink-muted">
                           EGP
                         </span>
                       </p>
                       <button
                         type="button"
-                        onClick={() => addToCart(product)}
+                        onClick={() => handleAddToCart(product)}
                         className="inline-flex h-11 items-center gap-2 rounded-full bg-primary-tint px-4 text-sm font-extrabold text-primary-strong transition hover:bg-primary-strong hover:text-white"
                         aria-label={`Add ${product.name} to cart`}
                       >

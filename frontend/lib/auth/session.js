@@ -1,31 +1,30 @@
 const KEY = "petmate:session";
 
-function parseDate(value) {
-  return new Date(String(value).replace(/(\.\d{3})\d+/, "$1"));
-}
-
 export function clearSession() {
-  localStorage.removeItem(KEY);
-  sessionStorage.removeItem(KEY);
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(KEY);
+    sessionStorage.removeItem(KEY);
+  } catch {}
 }
 
 export function saveSession(session, remember = true) {
-  clearSession();
-  (remember ? localStorage : sessionStorage).setItem(
-    KEY,
-    JSON.stringify(session),
-  );
+  if (typeof window === "undefined") return;
+  try {
+    clearSession();
+    const str = JSON.stringify(session);
+    localStorage.setItem(KEY, str);
+    sessionStorage.setItem(KEY, str);
+  } catch {}
 }
 
 export function readSession() {
+  if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(KEY) ?? sessionStorage.getItem(KEY);
-    const session = raw ? JSON.parse(raw) : null;
-    if (session?.expiresAt && parseDate(session.expiresAt) <= new Date()) {
-      clearSession();
-      return null;
-    }
-    return session;
+    const raw = localStorage.getItem(KEY) || sessionStorage.getItem(KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    return session && typeof session === "object" ? session : null;
   } catch {
     return null;
   }
