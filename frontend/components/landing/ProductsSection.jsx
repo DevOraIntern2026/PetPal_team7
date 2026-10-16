@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../../lib/auth/AuthContext";
+import { useCart } from "../../hooks/useCart";
 
 const products = [
   {
@@ -62,6 +64,8 @@ const cardVariants = {
 };
 
 export default function ProductsSection() {
+  const { user, requireAuth } = useAuth();
+  const { addToCart } = useCart();
   const [search, setSearch] = useState("");
   const [addedProducts, setAddedProducts] = useState([]);
 
@@ -69,11 +73,26 @@ export default function ProductsSection() {
     product.name.toLowerCase().includes(search.trim().toLowerCase()),
   );
 
-  function handleAdd(productId) {
+  function handleAdd(product) {
+    if (!user) {
+      requireAuth(
+        "shop",
+        async () => {
+          await addToCart(product, 1, { promptAuthIfGuest: false });
+          setAddedProducts((current) =>
+            current.includes(product.id) ? current : [...current, product.id],
+          );
+        },
+        "/store/cart",
+      );
+      return;
+    }
+
+    addToCart(product, 1, { promptAuthIfGuest: false });
     setAddedProducts((current) =>
-      current.includes(productId)
-        ? current.filter((id) => id !== productId)
-        : [...current, productId],
+      current.includes(product.id)
+        ? current.filter((id) => id !== product.id)
+        : [...current, product.id],
     );
   }
 
@@ -262,7 +281,7 @@ export default function ProductsSection() {
                       <motion.button
                         type="button"
                         whileTap={{ scale: 0.85 }}
-                        onClick={() => handleAdd(product.id)}
+                        onClick={() => handleAdd(product)}
                         aria-label={
                           isAdded
                             ? `Remove ${product.name} from selection`

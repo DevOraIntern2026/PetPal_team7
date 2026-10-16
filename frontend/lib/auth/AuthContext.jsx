@@ -8,78 +8,201 @@ import {
   useMemo,
   useState,
 } from "react";
+import { authApi } from "./authApi";
+import { getErrorMessage } from "../api";
+import { clearSession, readSession, saveSession } from "./session";
 
 const AuthContext = createContext(null);
-const KEY = "petmate:user";
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "true";
 
-function readUser() {
-  try {
-    return JSON.parse(
-      localStorage.getItem(KEY) ?? sessionStorage.getItem(KEY) ?? "null",
-    );
-  } catch {
-    return null;
-  }
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function toSession(data, fallbackEmail = "", fallbackName = "") {
+  const emailFallbackName = fallbackEmail
+    ? fallbackEmail.split("@")[0]
+    : "Pet Lover";
+
+  const defaultName = fallbackName || emailFallbackName;
+
+  const token =
+    data?.token ??
+    data?.accessToken ??
+    data?.jwt ??
+    data?.data?.token ??
+    data?.data?.accessToken ??
+    data?.data?.jwt ??
+    "";
+
+  return {
+    token,
+    refreshToken: data?.refreshToken ?? data?.data?.refreshToken ?? "",
+    expiresAt: data?.expiresAt ?? data?.data?.expiresAt ?? null,
+    user: {
+      id: data?.userId ?? data?.id ?? data?.user?.id ?? "user",
+      name:
+        data?.fullName ??
+        data?.name ??
+        data?.user?.fullName ??
+        data?.user?.name ??
+        defaultName,
+      email: data?.email ?? data?.user?.email ?? fallbackEmail,
+    },
+  };
 }
 
 export function AuthProvider({ children }) {
+  // Keep the initial state identical on the server and client.
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
-  const [promptReason, setPromptReason] = useState(null); // null = modal closed
+  const [promptReason, setPromptReason] = useState(null);
+  const [promptRedirect, setPromptRedirect] = useState(null);
 
   useEffect(() => {
-    setUser(readUser());
+    // Read the saved session after mounting to avoid hydration mismatches.
+    setUser(readSession()?.user ?? null);
     setReady(true);
+
+    const onUnauthorized = () => {
+      clearSession();
+      setUser(null);
+      setPromptReason(null);
+      setPromptRedirect(null);
+    };
+
+    window.addEventListener("petmate:unauthorized", onUnauthorized);
+
+    return () => {
+      window.removeEventListener("petmate:unauthorized", onUnauthorized);
+    };
   }, []);
 
-  // TODO: replace the fake delay with the real Axios call once the API exists
-  const login = useCallback(async ({ email, remember }) => {
-    await new Promise((r) => setTimeout(r, 600));
-    const nextUser = { id: "demo", name: email.split("@")[0], email };
-    (remember ? localStorage : sessionStorage).setItem(
-      KEY,
-      JSON.stringify(nextUser),
-    );
-    setUser(nextUser);
+  const login = useCallback(async ({ email, password, remember }) => {
+    let session;
+
+    if (USE_MOCK) {
+      await wait(600);
+
+      session = {
+        token: "mock",
+        expiresAt: null,
+        user: {
+          id: "demo",
+          name: email.split("@")[0],
+          email,
+        },
+      };
+    } else {
+      try {
+        const data = await authApi.login({ email, password });
+        session = toSession(data, email);
+      } catch (err) {
+        throw new Error(
+          getErrorMessage(err, "Couldn't log in. Please try again."),
+        );
+      }
+    }
+
+    saveSession(session, remember);
+    setUser(session.user);
+    setPromptReason(null);
+    setPromptRedirect(null);
   }, []);
 
-  const signup = useCallback(async ({ name, email }) => {
-    await new Promise((r) => setTimeout(r, 600));
-    const nextUser = { id: "demo", name, email };
-    localStorage.setItem(KEY, JSON.stringify(nextUser));
-    setUser(nextUser);
+  const signup = useCallback(async ({ name, email, password }) => {
+    let session;
+
+    if (USE_MOCK) {
+      await wait(600);
+
+      session = {
+        token: "mock",
+        expiresAt: null,
+        user: {
+          id: "demo",
+          name,
+          email,
+        },
+      };
+    } else {
+      try {
+        let data = await authApi.signup({
+          name,
+          email,
+          password,
+        });
+
+        const hasToken =
+          data?.token ??
+          data?.accessToken ??
+          data?.jwt ??
+          data?.data?.token ??
+          data?.data?.accessToken ??
+          data?.data?.jwt;
+
+        // Log in after registration if the signup response has no token.
+        if (!hasToken) {
+          data = await authApi.login({ email, password });
+        }
+
+        session = toSession(data, email, name);
+      } catch (err) {
+        throw new Error(
+          getErrorMessage(
+            err,
+            "Couldn't create your account. Please try again.",
+          ),
+        );
+      }
+    }
+
+    saveSession(session, true);
+    setUser(session.user);
+    setPromptReason(null);
+    setPromptRedirect(null);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(KEY);
-    sessionStorage.removeItem(KEY);
+    clearSession();
     setUser(null);
+    setPromptReason(null);
+    setPromptRedirect(null);
   }, []);
 
-  // Runs `action` if signed in, otherwise opens the sign-in modal.
   const requireAuth = useCallback(
-    (reason, action) => {
-      if (user) {
+    (reason, action, redirectUrl) => {
+      // Use the context user first, then check the saved session
+      // once initialization is complete.
+      const activeUser = user || (ready ? readSession()?.user : null);
+
+      if (activeUser) {
         action?.();
         return true;
       }
+
       setPromptReason(reason ?? "default");
+      setPromptRedirect(redirectUrl ?? null);
+
       return false;
     },
-    [user],
+    [user, ready],
   );
 
-  const closePrompt = useCallback(() => setPromptReason(null), []);
+  const closePrompt = useCallback(() => {
+    setPromptReason(null);
+    setPromptRedirect(null);
+  }, []);
 
   const value = useMemo(
     () => ({
       user,
       ready,
+      isAuthenticated: Boolean(user),
       login,
       signup,
       logout,
       requireAuth,
       promptReason,
+      promptRedirect,
       closePrompt,
     }),
     [
@@ -90,6 +213,7 @@ export function AuthProvider({ children }) {
       logout,
       requireAuth,
       promptReason,
+      promptRedirect,
       closePrompt,
     ],
   );
@@ -99,6 +223,10 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+
+  if (!ctx) {
+    throw new Error("useAuth must be used inside <AuthProvider>");
+  }
+
   return ctx;
 }
