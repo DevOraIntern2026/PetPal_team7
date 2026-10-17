@@ -5,7 +5,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { authApi } from "./authApi";
@@ -14,137 +13,81 @@ import { clearSession, readSession, saveSession } from "./session";
 
 const AuthContext = createContext(null);
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "true";
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// Data that belongs to the signed-in user and must not leak to the next one
+const USER_DATA_KEYS = ["petmate-cart", "petpal:profile_image"];
 
-function toSession(data, fallbackEmail = "", fallbackName = "") {
-  const emailFallbackName = fallbackEmail
-    ? fallbackEmail.split("@")[0]
-    : "Pet Lover";
+function clearUserData() {
+  USER_DATA_KEYS.forEach((key) => localStorage.removeItem(key));
+  window.dispatchEvent(new Event("petmate:cart-updated")); // tells useCart to empty itself
+}
 
-  const defaultName = fallbackName || emailFallbackName;
-
-  const token =
-    data?.token ??
-    data?.accessToken ??
-    data?.jwt ??
-    data?.data?.token ??
-    data?.data?.accessToken ??
-    data?.data?.jwt ??
-    "";
-
+function toSession(data) {
   return {
-    token,
-    refreshToken: data?.refreshToken ?? data?.data?.refreshToken ?? "",
-    expiresAt: data?.expiresAt ?? data?.data?.expiresAt ?? null,
+    token: data.token,
+    expiresAt: data.expiresAt,
+    refreshToken: data.refreshToken,
+    refreshTokenExpiresAt: data.refreshTokenExpiresAt,
     user: {
-      id: data?.userId ?? data?.id ?? data?.user?.id ?? "user",
-      name:
-        data?.fullName ??
-        data?.name ??
-        data?.user?.fullName ??
-        data?.user?.name ??
-        defaultName,
-      email: data?.email ?? data?.user?.email ?? fallbackEmail,
+      id: data.userId,
+      name: data.fullName,
+      email: data.email,
+      roles: data.roles ?? [],
     },
   };
 }
 
 export function AuthProvider({ children }) {
-  // Keep the initial state identical on the server and client.
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
-  const [promptReason, setPromptReason] = useState(null);
-  const [promptRedirect, setPromptRedirect] = useState(null);
+  const [promptReason, setPromptReason] = useState(null); // null = modal closed
+  const [promptRedirect, setPromptRedirect] = useState(null); // where to go after login
 
   useEffect(() => {
-    // Read the saved session after mounting to avoid hydration mismatches.
     setUser(readSession()?.user ?? null);
     setReady(true);
 
     const onUnauthorized = () => {
-      clearSession();
+      clearUserData();
       setUser(null);
-      setPromptReason(null);
-      setPromptRedirect(null);
     };
-
     window.addEventListener("petmate:unauthorized", onUnauthorized);
-
-    return () => {
+    return () =>
       window.removeEventListener("petmate:unauthorized", onUnauthorized);
-    };
   }, []);
 
-  const login = useCallback(async ({ email, password, remember }) => {
+  async function login({ email, password, remember }) {
     let session;
-
     if (USE_MOCK) {
       await wait(600);
-
       session = {
         token: "mock",
-        expiresAt: null,
-        user: {
-          id: "demo",
-          name: email.split("@")[0],
-          email,
-        },
+        user: { id: "demo", name: email.split("@")[0], email, roles: [] },
       };
     } else {
       try {
-        const data = await authApi.login({ email, password });
-        session = toSession(data, email);
+        session = toSession(await authApi.login({ email, password }));
       } catch (err) {
         throw new Error(
           getErrorMessage(err, "Couldn't log in. Please try again."),
         );
       }
     }
-
     saveSession(session, remember);
     setUser(session.user);
-    setPromptReason(null);
-    setPromptRedirect(null);
-  }, []);
+  }
 
-  const signup = useCallback(async ({ name, email, password }) => {
+  async function signup({ name, email, password }) {
     let session;
-
     if (USE_MOCK) {
       await wait(600);
-
-      session = {
-        token: "mock",
-        expiresAt: null,
-        user: {
-          id: "demo",
-          name,
-          email,
-        },
-      };
+      session = { token: "mock", user: { id: "demo", name, email, roles: [] } };
     } else {
       try {
-        let data = await authApi.signup({
-          name,
-          email,
-          password,
-        });
-
-        const hasToken =
-          data?.token ??
-          data?.accessToken ??
-          data?.jwt ??
-          data?.data?.token ??
-          data?.data?.accessToken ??
-          data?.data?.jwt;
-
-        // Log in after registration if the signup response has no token.
-        if (!hasToken) {
-          data = await authApi.login({ email, password });
-        }
-
-        session = toSession(data, email, name);
+        let data = await authApi.signup({ name, email, password });
+        if (!data?.token) data = await authApi.login({ email, password });
+        session = toSession(data);
       } catch (err) {
         throw new Error(
           getErrorMessage(
@@ -154,79 +97,65 @@ export function AuthProvider({ children }) {
         );
       }
     }
-
     saveSession(session, true);
     setUser(session.user);
-    setPromptReason(null);
-    setPromptRedirect(null);
-  }, []);
+  }
 
-  const logout = useCallback(() => {
+  async function logout() {
+    const refreshToken = readSession()?.refreshToken;
+    if (!USE_MOCK && refreshToken) {
+      try {
+        await authApi.logout(refreshToken); // needs the token, so call before clearing
+      } catch {
+        // still sign out locally if the server call fails
+      }
+    }
     clearSession();
+    clearUserData();
     setUser(null);
-    setPromptReason(null);
-    setPromptRedirect(null);
-  }, []);
+  }
 
+  // Runs `action` if signed in, otherwise opens the sign-in modal.
+  // `redirectTo` (optional) is where the user lands after logging in.
   const requireAuth = useCallback(
-    (reason, action, redirectUrl) => {
-      // Use the context user first, then check the saved session
-      // once initialization is complete.
-      const activeUser = user || (ready ? readSession()?.user : null);
-
-      if (activeUser) {
+    (reason, action, redirectTo) => {
+      if (user) {
         action?.();
         return true;
       }
-
       setPromptReason(reason ?? "default");
-      setPromptRedirect(redirectUrl ?? null);
-
+      setPromptRedirect(redirectTo ?? null);
       return false;
     },
-    [user, ready],
+    [user],
   );
 
-  const closePrompt = useCallback(() => {
+  function closePrompt() {
     setPromptReason(null);
     setPromptRedirect(null);
-  }, []);
+  }
 
-  const value = useMemo(
-    () => ({
-      user,
-      ready,
-      isAuthenticated: Boolean(user),
-      login,
-      signup,
-      logout,
-      requireAuth,
-      promptReason,
-      promptRedirect,
-      closePrompt,
-    }),
-    [
-      user,
-      ready,
-      login,
-      signup,
-      logout,
-      requireAuth,
-      promptReason,
-      promptRedirect,
-      closePrompt,
-    ],
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: Boolean(user),
+        ready,
+        login,
+        signup,
+        logout,
+        requireAuth,
+        promptReason,
+        promptRedirect,
+        closePrompt,
+      }}>
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-
-  if (!ctx) {
-    throw new Error("useAuth must be used inside <AuthProvider>");
-  }
-
+  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
   return ctx;
 }

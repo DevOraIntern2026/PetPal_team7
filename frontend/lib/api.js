@@ -1,13 +1,11 @@
 import axios from "axios";
-import { clearSession, readSession } from "./auth/session";
+import { clearSession, readSession, updateTokens } from "./auth/session";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "",
-  headers: {
-    "X-Tunnel-Skip-Anti-Abuse-Page": "true",
-  },
 });
 
+// Attach the access token to every request
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = readSession()?.token;
@@ -24,28 +22,64 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+let refreshing = null; 
+
+function refreshTokens() {
+  const refreshToken = readSession()?.refreshToken;
+  if (!refreshToken) return Promise.reject(new Error("No refresh token"));
+
+  refreshing ??= axios
+    .post(
+      "/api/auth/refresh-token",
+      { refreshToken },
+      { baseURL: api.defaults.baseURL },
+    )
+    .then(({ data }) => {
+      updateTokens({
+        token: data.token,
+        expiresAt: data.expiresAt,
+        refreshToken: data.refreshToken,
+        refreshTokenExpiresAt: data.refreshTokenExpiresAt,
+      });
+      return data.token;
+    })
+    .finally(() => {
+      refreshing = null;
+    });
+
+  return refreshing;
+}
+
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    const url = err.config?.url || "";
-    const isAuthCall = url.includes("/api/auth/");
-    const isStoreOrCart =
-      url.includes("/api/products") || url.includes("/api/cart");
+  async (err) => {
+    const original = err.config;
+    const isAuthCall = original?.url?.includes("/api/auth/");
 
-    // Do not clear the session when products or cart requests return 401.
-    // Clear it only when the current-user verification fails.
     if (
-      err.response?.status === 401 &&
-      !isAuthCall &&
-      !isStoreOrCart &&
-      url.includes("/api/users/me") &&
-      typeof window !== "undefined"
+      typeof window === "undefined" ||
+      err.response?.status !== 401 ||
+      !original ||
+      isAuthCall ||
+      original._retry ||
+      !readSession() 
     ) {
-      clearSession();
-      window.dispatchEvent(new Event("petmate:unauthorized"));
+      return Promise.reject(err);
     }
 
-    return Promise.reject(err);
+    original._retry = true;
+    try {
+      const token = await refreshTokens();
+      original.headers.Authorization = `Bearer ${token}`;
+      return api(original);
+    } catch (refreshErr) {
+      if (refreshErr?.config || refreshErr?.message === "No refresh token") {
+        clearSession();
+        window.dispatchEvent(new Event("petmate:unauthorized"));
+        return Promise.reject(err);
+      }
+      return Promise.reject(refreshErr);
+    }
   },
 );
 

@@ -23,12 +23,6 @@ function ProfileDropdown({ user, profile, logout }) {
   const [cachedAvatar, setCachedAvatar] = useState(null);
   const ref = useRef(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCachedAvatar(localStorage.getItem("petpal:profile_image"));
-    }
-  }, [profile]);
-
   const avatarUrl =
     profile?.profileImageUrl ||
     profile?.avatarUrl ||
@@ -44,6 +38,10 @@ function ProfileDropdown({ user, profile, logout }) {
     function handleClick(e) {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     }
+    function handleKey(e) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", handleKey);
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
@@ -58,8 +56,7 @@ function ProfileDropdown({ user, profile, logout }) {
         className="group flex items-center gap-2 rounded-full border border-gray-200 p-0.5 pr-2 transition hover:bg-gray-50 focus:outline-none"
         aria-haspopup="true"
         aria-expanded={open}
-        title={user ? displayName : "Account"}
-      >
+        title={user ? displayName : "Account"}>
         {/* Avatar: Photo if uploaded, else grey icon */}
         <span className="relative flex size-8 shrink-0 overflow-hidden rounded-full ring-1 ring-gray-200">
           {avatarUrl ? (
@@ -94,8 +91,7 @@ function ProfileDropdown({ user, profile, logout }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl ring-1 ring-black/5"
-          >
+            className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl ring-1 ring-black/5">
             {user ? (
               <>
                 {/* User info header */}
@@ -118,7 +114,9 @@ function ProfileDropdown({ user, profile, logout }) {
                       {displayName}
                     </p>
                     {displayEmail && (
-                      <p className="truncate text-[11px] text-ink/50 font-medium">{displayEmail}</p>
+                      <p className="truncate text-[11px] text-ink/50 font-medium">
+                        {displayEmail}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -129,8 +127,7 @@ function ProfileDropdown({ user, profile, logout }) {
                     href="/account"
                     id="navbar-account-link"
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong"
-                  >
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong">
                     <User size={16} className="text-primary-strong" />
                     <span>My Profile</span>
                   </Link>
@@ -138,8 +135,7 @@ function ProfileDropdown({ user, profile, logout }) {
                   <Link
                     href="/login"
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-ink/70 transition hover:bg-gray-50 hover:text-ink"
-                  >
+                    className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-ink/70 transition hover:bg-gray-50 hover:text-ink">
                     <LogIn size={15} className="text-ink/50" />
                     <span>Log In to Another Account</span>
                   </Link>
@@ -153,8 +149,7 @@ function ProfileDropdown({ user, profile, logout }) {
                       logout();
                       setOpen(false);
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-amber-600 transition hover:bg-amber-50 hover:text-amber-700"
-                  >
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-amber-600 transition hover:bg-amber-50 hover:text-amber-700">
                     <LogOut size={16} />
                     <span>Log Out</span>
                   </button>
@@ -162,40 +157,26 @@ function ProfileDropdown({ user, profile, logout }) {
               </>
             ) : (
               <>
-                {/* Guest header */}
-                <div className="border-b border-gray-100 px-4 py-3 bg-[#FAFBF5]">
-                  <p className="text-xs font-bold text-ink">Welcome to PetPal</p>
-                  <p className="text-[11px] text-ink/50">Sign in to manage your account</p>
-                </div>
-
                 {/* Logged out items: Login, Sign up, Profile */}
                 <div className="p-1.5 space-y-0.5">
                   <Link
-                    href="/login"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong"
-                  >
-                    <LogIn size={16} className="text-primary-strong" />
-                    <span>Log In</span>
-                  </Link>
-
-                  <Link
-                    href="/signup"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong"
-                  >
-                    <UserPlus size={16} className="text-primary-strong" />
-                    <span>Sign Up</span>
-                  </Link>
-
-                  <Link
                     href="/account"
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-ink/70 transition hover:bg-gray-50 hover:text-ink"
-                  >
+                    className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-ink/70 transition hover:bg-gray-50 hover:text-ink">
                     <User size={15} className="text-ink/50" />
                     <span>Profile</span>
                   </Link>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-danger transition hover:bg-danger/10 focus-ring">
+                    <LogOut size={16} aria-hidden="true" />
+                    <span>Log out</span>
+                  </button>
                 </div>
               </>
             )}
@@ -219,8 +200,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-xl leading-none transition hover:opacity-90"
-        >
+          className="flex items-center gap-2.5 text-xl leading-none transition hover:opacity-90">
           <Image
             src="/images/landing/logo.png"
             alt="Pet Mate Logo"
@@ -246,10 +226,9 @@ export default function Navbar() {
                   href={link.href}
                   className={`inline-flex items-center justify-center rounded-full px-4 py-2 transition-all ${
                     isActive
-                      ? "bg-primary text-white shadow-xs"
-                      : "text-ink/75 hover:bg-gray-100/70 hover:text-primary"
-                  }`}
-                >
+                      ? "bg-primary-strong text-white shadow-xs"
+                      : "text-ink/75 hover:bg-gray-100/70 hover:text-primary-strong"
+                  }`}>
                   {link.label}
                 </Link>
               </li>
@@ -263,19 +242,17 @@ export default function Navbar() {
           {!ready ? (
             <div aria-hidden="true" className="h-9 w-32" />
           ) : user ? (
-            <ProfileDropdown user={user} profile={profile} logout={logout} />
+            <ProfileDropdown user={null} profile={null} logout={logout} />
           ) : (
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="rounded-full px-4 py-2 font-bold text-ink transition hover:text-primary"
-              >
+                className="rounded-full px-4 py-2 font-bold text-ink transition hover:text-primary">
                 LOGIN
               </Link>
               <Link
                 href="/signup"
-                className="rounded-full bg-primary-strong px-5 py-2 font-bold text-white shadow-xs transition hover:scale-105 hover:bg-primary-deep active:scale-95"
-              >
+                className="rounded-full bg-primary-strong px-5 py-2 font-bold text-white shadow-xs transition hover:scale-105 hover:bg-primary-deep active:scale-95">
                 SIGN UP
               </Link>
               <ProfileDropdown user={null} profile={null} logout={logout} />

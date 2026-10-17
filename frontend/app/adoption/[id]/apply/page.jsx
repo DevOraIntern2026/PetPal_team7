@@ -1,17 +1,15 @@
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import { getPetById } from "../../../../lib/adoptionPets";
+import RequireAuth from "../../../../components/auth/RequireAuth";
 import ApplyForm from "../../../../components/adoption/ApplyForm";
 
-export default async function ApplyPage({ params }) {
-  const { id } = await params;
-  const pet = getPetById(id);
+export const metadata = { title: "Adoption application | Pet Mate" };
 
-  if (!pet) notFound();
-
+export default function ApplyPage() {
   return (
-    <Suspense fallback={null}>
-      <ApplyForm pet={pet} />
+    <Suspense fallback={<div className="min-h-[60vh]" />}>
+      <RequireAuth>
+        <ApplyForm />
+      </RequireAuth>
     </Suspense>
   );
 }

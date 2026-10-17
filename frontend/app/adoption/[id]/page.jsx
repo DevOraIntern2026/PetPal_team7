@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useListing } from "../../../hooks/useAdoption";
+import ApplyButton from "@/components/adoption/ApplyButton";
 
 export default function PetDetailsPage({ params }) {
   const { id } = use(params);
@@ -75,14 +76,8 @@ export default function PetDetailsPage({ params }) {
           )}
 
           <div className="mt-6 flex flex-col gap-3 sm:max-w-xs">
-            <button
-              type="button"
-              disabled
-              className="btn-primary cursor-not-allowed opacity-60"
-              title="Contact info is not available yet"
-            >
-              Contact owner (soon)
-            </button>
+            <ApplyButton petId={id} />
+            
             <Link href="/adoption" className="btn-secondary">
               Back to listings
             </Link>

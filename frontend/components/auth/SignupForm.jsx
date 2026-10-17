@@ -27,7 +27,6 @@ export default function SignupForm() {
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
       terms: false,
     },
   });
