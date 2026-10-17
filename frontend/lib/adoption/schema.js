@@ -1,28 +1,39 @@
 import { z } from "zod";
 
-export const applySchema = z.object({
-  fullName: z.string().trim().min(1, "Full name is required"),
-  email: z.string().trim().email("Enter a valid email"),
-  phone: z
-    .string()
-    .trim()
-    .regex(/^\d{8,15}$/, "Enter a valid phone number"),
-  city: z.string().min(1, "Choose your city"),
-  housing: z.enum(["Apartment", "House", "Other"]),
-  space: z.enum(["Yes", "No"]),
-  petAllowed: z.enum(["Yes", "No"]),
-  kidsOrPets: z.enum(["Yes", "No"]),
+const toNumber = (v) => (v === "" || v == null ? undefined : v);
+
+export const listingSchema = z.object({
+  petName: z.string().trim().min(1, "Pet name is required"),
+  location: z.string().trim().min(1, "Location is required"),
+  gender: z.enum(["Male", "Female"], { message: "Choose a gender" }),
+  price: z.preprocess(
+    toNumber,
+    z.coerce
+      .number({ message: "Enter a price (0 for free)" })
+      .min(0, "Price can't be negative"),
+  ),
+  weightKg: z.preprocess(
+    toNumber,
+    z.coerce
+      .number({ message: "Enter a valid weight" })
+      .positive("Enter a valid weight"),
+  ),
+  ageInMonths: z.preprocess(
+    toNumber,
+    z.coerce
+      .number({ message: "Enter a valid age" })
+      .int("Age must be a whole number")
+      .min(0, "Enter a valid age"),
+  ),
+  about: z.string().trim().max(1000, "Max 1000 characters").optional(),
 });
 
-export const STEP1_FIELDS = ["fullName", "email", "phone", "city"];
-
 export const DEFAULT_VALUES = {
-  fullName: "",
-  email: "",
-  phone: "",
-  city: "",
-  housing: "Apartment",
-  space: "Yes",
-  petAllowed: "Yes",
-  kidsOrPets: "No",
+  petName: "",
+  location: "",
+  gender: "",
+  price: 0,
+  weightKg: "",
+  ageInMonths: "",
+  about: "",
 };

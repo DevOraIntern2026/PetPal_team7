@@ -46,16 +46,18 @@ export default function AccountPage() {
   if (!user) return null;
 
   return (
-    <div className="flex min-h-[calc(100vh-5rem)] w-full flex-col bg-white md:flex-row md:items-start">
+    <div className="flex h-[calc(100vh-5rem)] w-full overflow-hidden bg-white">
       {/* Full-height docked Sidebar */}
-      <AccountSidebar
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
-        profile={profile}
-      />
+      <aside className="h-full shrink-0">
+        <AccountSidebar
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          profile={profile}
+        />
+      </aside>
 
       {/* Main Content Area */}
-      <main className="min-w-0 flex-1 bg-white p-6 md:p-10 lg:p-14">
+      <main className="h-full min-w-0 flex-1 overflow-y-auto bg-white p-6 md:p-10 lg:p-14">
         {profileLoading && activeTab === "profile" ? (
           <div className="flex min-h-[50vh] items-center justify-center">
             <RefreshCw size={26} className="animate-spin text-primary" />
