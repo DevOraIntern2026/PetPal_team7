@@ -5,10 +5,9 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag, User, LogOut, LogIn, UserPlus, ChevronDown } from "lucide-react";
+import { User, LogOut, LogIn, UserPlus, ChevronDown } from "lucide-react";
 import MobileMenu, { MobileMenuButton } from "./MobileMenu";
 import { useAuth } from "../../lib/auth/AuthContext";
-import { useCart } from "../../hooks/useCart";
 import { useProfile } from "../../hooks/useProfile";
 
 const links = [
@@ -212,7 +211,6 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const { user, logout, ready } = useAuth();
-  const { itemCount } = useCart();
   const { profile } = useProfile();
 
   return (
@@ -261,20 +259,6 @@ export default function Navbar() {
 
         {/* Desktop right actions */}
         <div className="hidden items-center gap-3 text-xs font-semibold md:flex">
-          {/* Cart */}
-          <Link
-            href="/store/cart"
-            aria-label="View cart"
-            className="relative flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white text-ink/80 shadow-xs transition hover:border-primary/40 hover:bg-gray-50 hover:text-primary"
-          >
-            <ShoppingBag size={17} />
-            {ready && itemCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary-strong px-1 text-[10px] font-bold text-white shadow-xs">
-                {itemCount}
-              </span>
-            )}
-          </Link>
-
           {/* Auth */}
           {!ready ? (
             <div aria-hidden="true" className="h-9 w-32" />
