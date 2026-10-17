@@ -15,7 +15,6 @@ const links = [
   { label: "ADOPTION", href: "/adoption" },
   { label: "STORE", href: "/store" },
   { label: "VETS", href: "/vets" },
-  { label: "AI ASSISTANT", href: "/ai-assistant" },
 ];
 
 function ProfileDropdown({ user, profile, logout }) {
@@ -124,6 +123,15 @@ function ProfileDropdown({ user, profile, logout }) {
                 {/* Logged in items: Profile, Login (switch), Logout */}
                 <div className="p-1.5 space-y-0.5">
                   <Link
+                    href="/dashboard"
+                    id="navbar-account-link"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong">
+                    <User size={16} className="text-primary-strong" />
+                    <span>My Dashboard</span>
+                  </Link>
+
+                  <Link
                     href="/account"
                     id="navbar-account-link"
                     onClick={() => setOpen(false)}
@@ -157,8 +165,16 @@ function ProfileDropdown({ user, profile, logout }) {
               </>
             ) : (
               <>
-                {/* Logged out items: Login, Sign up, Profile */}
                 <div className="p-1.5 space-y-0.5">
+                  <Link
+                    href="/dashboard"
+                    id="navbar-account-link"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong">
+                    <User size={16} className="text-primary-strong" />
+                    <span>My Dashboard</span>
+                  </Link>
+
                   <Link
                     href="/account"
                     onClick={() => setOpen(false)}
@@ -166,6 +182,7 @@ function ProfileDropdown({ user, profile, logout }) {
                     <User size={15} className="text-ink/50" />
                     <span>Profile</span>
                   </Link>
+
                   <div className="my-1 border-t border-gray-100" />
                   <button
                     type="button"

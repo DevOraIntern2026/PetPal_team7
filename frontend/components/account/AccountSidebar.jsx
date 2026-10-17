@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import {
+  LayoutDashboard,
   User,
   PawPrint,
   Calendar,
@@ -12,6 +13,7 @@ import {
 import { useAuth } from "../../lib/auth/AuthContext";
 
 export const ACCOUNT_TABS = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "profile", label: "My Profile", icon: User },
   { id: "pets", label: "My Pets", icon: PawPrint },
   { id: "appointments", label: "My Appointments", icon: Calendar },

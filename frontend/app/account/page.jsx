@@ -13,10 +13,17 @@ import FavoritesTab from "../../components/account/FavoritesTab";
 import OrdersTab from "../../components/account/OrdersTab";
 import { RefreshCw } from "lucide-react";
 
+const VALID_TABS = ["profile", "pets", "appointments", "favorites", "orders"];
+
 export default function AccountPage() {
   const { user, ready, requireAuth } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("profile");
+
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window === "undefined") return "profile";
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    return VALID_TABS.includes(tab) ? tab : "profile";
+  });
 
   const {
     profile,
@@ -35,6 +42,10 @@ export default function AccountPage() {
     }
   }, [ready, user, requireAuth, router]);
 
+  // The dashboard is its own page
+  const selectTab = (id) =>
+    id === "dashboard" ? router.push("/dashboard") : setActiveTab(id);
+
   if (!ready) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -51,7 +62,7 @@ export default function AccountPage() {
       <aside className="h-full shrink-0">
         <AccountSidebar
           activeTab={activeTab}
-          onSelectTab={setActiveTab}
+          onSelectTab={selectTab}
           profile={profile}
         />
       </aside>
