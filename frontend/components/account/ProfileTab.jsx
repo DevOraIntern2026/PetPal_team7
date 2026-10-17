@@ -20,8 +20,10 @@ import {
   Bot,
   Lock,
   Loader2,
+  Stethoscope,
 } from "lucide-react";
 import EditProfileModal from "./EditProfileModal";
+import Link from "next/link";
 
 export default function ProfileTab({
   profile,
@@ -79,8 +81,7 @@ export default function ProfileTab({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-[#FAFBF5] via-white to-primary-tint/30 p-6 sm:p-8 shadow-xs"
-      >
+        className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-[#FAFBF5] via-white to-primary-tint/30 p-6 sm:p-8 shadow-xs">
         {/* Decorative background glow */}
         <div className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-16 -bottom-16 size-64 rounded-full bg-amber-200/20 blur-3xl" />
@@ -113,8 +114,7 @@ export default function ProfileTab({
               {/* Direct Camera Upload Badge */}
               <label
                 className="absolute bottom-0 right-0 flex size-9 items-center justify-center rounded-full bg-gradient-to-tr from-[#28A8C7] to-[#1888a2] text-white shadow-md ring-3 ring-white transition-all hover:scale-110 active:scale-95 cursor-pointer"
-                title="Change photo"
-              >
+                title="Change photo">
                 {uploading ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
@@ -138,8 +138,7 @@ export default function ProfileTab({
                 </h1>
                 <span
                   className="inline-flex items-center gap-1 rounded-full bg-[#E6F7FA] px-2.5 py-0.5 text-xs font-bold text-[#147B97]"
-                  title="Verified Pet Owner"
-                >
+                  title="Verified Pet Owner">
                   <BadgeCheck size={14} />
                   <span>Pet Parent</span>
                 </span>
@@ -174,8 +173,7 @@ export default function ProfileTab({
             <button
               type="button"
               onClick={() => openEdit("info")}
-              className="inline-flex items-center gap-2 rounded-full bg-[#28A8C7] px-7 py-3 text-sm font-extrabold text-white shadow-sm transition-all hover:bg-[#1f8da8] hover:shadow-md active:scale-95"
-            >
+              className="inline-flex items-center gap-2 rounded-full bg-[#28A8C7] px-7 py-3 text-sm font-extrabold text-white shadow-sm transition-all hover:bg-[#1f8da8] hover:shadow-md active:scale-95">
               <Pencil size={16} />
               <span>Edit Profile</span>
             </button>
@@ -191,16 +189,20 @@ export default function ProfileTab({
           whileHover={{ y: -4 }}
           transition={{ duration: 0.15 }}
           onClick={() => onSelectTab && onSelectTab("pets")}
-          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm"
-        >
+          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
               <PawPrint size={20} />
             </div>
-            <ArrowRight size={15} className="text-ink/30 group-hover:text-primary transition-colors" />
+            <ArrowRight
+              size={15}
+              className="text-ink/30 group-hover:text-primary transition-colors"
+            />
           </div>
           <div className="mt-3">
-            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">My Pets</p>
+            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">
+              My Pets
+            </p>
             <p className="text-lg font-black text-ink">1 Registered</p>
           </div>
         </motion.button>
@@ -211,16 +213,20 @@ export default function ProfileTab({
           whileHover={{ y: -4 }}
           transition={{ duration: 0.15 }}
           onClick={() => onSelectTab && onSelectTab("appointments")}
-          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm"
-        >
+          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex size-10 items-center justify-center rounded-xl bg-teal-50 text-[#147B97] group-hover:scale-110 transition-transform">
               <Calendar size={20} />
             </div>
-            <ArrowRight size={15} className="text-ink/30 group-hover:text-primary transition-colors" />
+            <ArrowRight
+              size={15}
+              className="text-ink/30 group-hover:text-primary transition-colors"
+            />
           </div>
           <div className="mt-3">
-            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">Appointments</p>
+            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">
+              Appointments
+            </p>
             <p className="text-lg font-black text-ink">2 Scheduled</p>
           </div>
         </motion.button>
@@ -231,16 +237,20 @@ export default function ProfileTab({
           whileHover={{ y: -4 }}
           transition={{ duration: 0.15 }}
           onClick={() => onSelectTab && onSelectTab("favorites")}
-          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm"
-        >
+          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex size-10 items-center justify-center rounded-xl bg-rose-50 text-rose-500 group-hover:scale-110 transition-transform">
               <Heart size={20} />
             </div>
-            <ArrowRight size={15} className="text-ink/30 group-hover:text-primary transition-colors" />
+            <ArrowRight
+              size={15}
+              className="text-ink/30 group-hover:text-primary transition-colors"
+            />
           </div>
           <div className="mt-3">
-            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">Favorites</p>
+            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">
+              Favorites
+            </p>
             <p className="text-lg font-black text-ink">4 Saved</p>
           </div>
         </motion.button>
@@ -251,16 +261,20 @@ export default function ProfileTab({
           whileHover={{ y: -4 }}
           transition={{ duration: 0.15 }}
           onClick={() => onSelectTab && onSelectTab("orders")}
-          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm"
-        >
+          className="group flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-4 text-left shadow-2xs transition hover:border-primary/40 hover:shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex size-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 group-hover:scale-110 transition-transform">
               <ShoppingBag size={20} />
             </div>
-            <ArrowRight size={15} className="text-ink/30 group-hover:text-primary transition-colors" />
+            <ArrowRight
+              size={15}
+              className="text-ink/30 group-hover:text-primary transition-colors"
+            />
           </div>
           <div className="mt-3">
-            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">Store Orders</p>
+            <p className="text-xs font-bold text-ink/50 uppercase tracking-wider">
+              Store Orders
+            </p>
             <p className="text-lg font-black text-ink">1 Completed</p>
           </div>
         </motion.button>
@@ -283,8 +297,7 @@ export default function ProfileTab({
               type="button"
               onClick={() => openEdit("info")}
               aria-label="Edit personal information"
-              className="flex size-8 items-center justify-center rounded-full text-ink/50 transition hover:bg-gray-100 hover:text-ink"
-            >
+              className="flex size-8 items-center justify-center rounded-full text-ink/50 transition hover:bg-gray-100 hover:text-ink">
               <Pencil size={15} />
             </button>
           </div>
@@ -304,7 +317,9 @@ export default function ProfileTab({
               <div className="flex items-center gap-3">
                 <Mail size={17} className="text-ink/40 shrink-0" />
                 <div>
-                  <p className="text-xs font-semibold text-ink/50">Email Address</p>
+                  <p className="text-xs font-semibold text-ink/50">
+                    Email Address
+                  </p>
                   <p className="font-bold text-ink">{displayEmail}</p>
                 </div>
               </div>
@@ -318,7 +333,9 @@ export default function ProfileTab({
               <div className="flex items-center gap-3">
                 <Phone size={17} className="text-ink/40 shrink-0" />
                 <div>
-                  <p className="text-xs font-semibold text-ink/50">Phone Number</p>
+                  <p className="text-xs font-semibold text-ink/50">
+                    Phone Number
+                  </p>
                   <p className="font-bold text-ink">{displayPhone}</p>
                 </div>
               </div>
@@ -328,7 +345,9 @@ export default function ProfileTab({
               <div className="flex items-center gap-3">
                 <MapPin size={17} className="text-ink/40 shrink-0" />
                 <div>
-                  <p className="text-xs font-semibold text-ink/50">Country / Location</p>
+                  <p className="text-xs font-semibold text-ink/50">
+                    Country / Location
+                  </p>
                   <p className="font-bold text-ink">{displayCountry}</p>
                 </div>
               </div>
@@ -359,42 +378,40 @@ export default function ProfileTab({
                 <div className="flex items-center gap-3">
                   <Lock size={17} className="text-ink/40" />
                   <div>
-                    <p className="text-xs font-semibold text-ink/50">Password</p>
+                    <p className="text-xs font-semibold text-ink/50">
+                      Password
+                    </p>
                     <p className="font-bold text-ink">••••••••••••</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => openEdit("password")}
-                  className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-bold text-ink transition hover:border-primary hover:text-primary shadow-2xs"
-                >
+                  className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-bold text-ink transition hover:border-primary hover:text-primary shadow-2xs">
                   Change
                 </button>
               </div>
             </div>
 
-            {/* AI Assistant Banner */}
             <div className="mt-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary-tint/50 to-white p-4">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-                  <Bot size={22} />
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+                  <Stethoscope size={22} />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-bold text-ink">
-                    Need instant pet guidance?
+                    Time for a checkup?
                   </h3>
                   <p className="text-xs text-ink/60">
-                    Ask our AI Vet Assistant anytime about symptoms or pet diet.
+                    Browse our vets and book a visit in a few minutes.
                   </p>
                 </div>
               </div>
-              <a
-                href="/ai-assistant"
-                className="mt-3.5 inline-flex items-center gap-1.5 text-xs font-bold text-primary-strong hover:underline"
-              >
-                <span>Chat with AI Assistant</span>
-                <ArrowRight size={13} />
-              </a>
+              <Link
+                href="/vets"
+                className="focus-ring mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-strong hover:underline">
+                Find a vet <ArrowRight size={14} />
+              </Link>
             </div>
           </div>
 

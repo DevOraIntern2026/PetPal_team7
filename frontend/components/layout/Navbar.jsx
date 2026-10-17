@@ -42,7 +42,10 @@ function ProfileDropdown({ user, profile, logout }) {
     }
     document.addEventListener("keydown", handleKey);
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.removeEventListener("mousedown", handleClick);
+    };
   }, []);
 
   return (
@@ -91,7 +94,7 @@ function ProfileDropdown({ user, profile, logout }) {
             exit={{ opacity: 0, y: 6, scale: 0.97 }}
             transition={{ duration: 0.15 }}
             className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl ring-1 ring-black/5">
-            {user ? (
+            {user && (
               <>
                 {/* User info header */}
                 <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3 bg-[#FAFBF5]">
@@ -124,7 +127,7 @@ function ProfileDropdown({ user, profile, logout }) {
                 <div className="p-1.5 space-y-0.5">
                   <Link
                     href="/dashboard"
-                    id="navbar-account-link"
+                    id="navbar-profile-link"
                     onClick={() => setOpen(false)}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong">
                     <User size={16} className="text-primary-strong" />
@@ -133,7 +136,7 @@ function ProfileDropdown({ user, profile, logout }) {
 
                   <Link
                     href="/account"
-                    id="navbar-account-link"
+                    id="navbar-profile-link"
                     onClick={() => setOpen(false)}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong">
                     <User size={16} className="text-primary-strong" />
@@ -160,39 +163,6 @@ function ProfileDropdown({ user, profile, logout }) {
                     className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-amber-600 transition hover:bg-amber-50 hover:text-amber-700">
                     <LogOut size={16} />
                     <span>Log Out</span>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="p-1.5 space-y-0.5">
-                  <Link
-                    href="/dashboard"
-                    id="navbar-account-link"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-primary-tint hover:text-primary-strong">
-                    <User size={16} className="text-primary-strong" />
-                    <span>My Dashboard</span>
-                  </Link>
-
-                  <Link
-                    href="/account"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-ink/70 transition hover:bg-gray-50 hover:text-ink">
-                    <User size={15} className="text-ink/50" />
-                    <span>Profile</span>
-                  </Link>
-
-                  <div className="my-1 border-t border-gray-100" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      logout();
-                      setOpen(false);
-                    }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-danger transition hover:bg-danger/10 focus-ring">
-                    <LogOut size={16} aria-hidden="true" />
-                    <span>Log out</span>
                   </button>
                 </div>
               </>
@@ -259,7 +229,7 @@ export default function Navbar() {
           {!ready ? (
             <div aria-hidden="true" className="h-9 w-32" />
           ) : user ? (
-            <ProfileDropdown user={null} profile={null} logout={logout} />
+            <ProfileDropdown user={user} profile={profile} logout={logout} />
           ) : (
             <div className="flex items-center gap-3">
               <Link
@@ -272,7 +242,6 @@ export default function Navbar() {
                 className="rounded-full bg-primary-strong px-5 py-2 font-bold text-white shadow-xs transition hover:scale-105 hover:bg-primary-deep active:scale-95">
                 SIGN UP
               </Link>
-              <ProfileDropdown user={null} profile={null} logout={logout} />
             </div>
           )}
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   LayoutDashboard,
   User,
@@ -9,10 +8,8 @@ import {
   Heart,
   ShoppingBag,
   LogOut,
-  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "../../lib/auth/AuthContext";
-import Link from "next/link";
 
 export const ACCOUNT_TABS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -23,9 +20,14 @@ export const ACCOUNT_TABS = [
   { id: "orders", label: "My orders", icon: ShoppingBag },
 ];
 
-export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
+export default function AccountSidebar({
+  activeTab,
+  onSelectTab,
+  profile,
+  tabs = ACCOUNT_TABS,
+  showTip = true,
+}) {
   const { user, logout } = useAuth();
-  const isAdmin = user?.roles?.some((r) => String(r).toLowerCase() === "admin");
 
   const displayName = profile?.fullName || user?.name || "maryam";
   const displayEmail = profile?.email || user?.email || "maryamtarek@gmail.com";
@@ -34,7 +36,9 @@ export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
     profile?.avatarUrl ||
     user?.profileImageUrl ||
     user?.avatarUrl ||
-    (typeof window !== "undefined" ? localStorage.getItem("petpal:profile_image") : null) ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("petpal:profile_image")
+      : null) ||
     null;
 
   return (
@@ -67,7 +71,7 @@ export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
 
         {/* Navigation tabs */}
         <nav className="space-y-1.5 pt-5">
-          {ACCOUNT_TABS.map((tab) => {
+          {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
 
@@ -89,29 +93,22 @@ export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
               </button>
             );
           })}
-
-          {isAdmin && (
-            <Link
-              href="/admin"
-              className="mt-4 flex w-full items-center gap-3.5 rounded-xl bg-primary-deep px-4 py-3 text-sm font-bold text-white transition hover:bg-primary-strong">
-              <ShieldCheck size={19} />
-              <span>Admin panel</span>
-            </Link>
-          )}
         </nav>
       </div>
 
       {/* Helpful Care Tip badge in sidebar */}
-      <div className="my-4 hidden rounded-2xl border border-primary/15 bg-white/70 p-4 shadow-2xs lg:block">
-        <div className="flex items-center gap-2 text-xs font-bold text-primary-strong">
-          <PawPrint size={15} />
-          <span>PetPal Daily Tip</span>
+      {showTip && (
+        <div className="my-4 hidden rounded-2xl border border-primary/15 bg-white/70 p-4 shadow-2xs lg:block">
+          <div className="flex items-center gap-2 text-xs font-bold text-primary-strong">
+            <PawPrint size={15} />
+            <span>PetPal Daily Tip</span>
+          </div>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-ink/65">
+            Regular checkups and vaccinations keep your furry companions happy &
+            active!
+          </p>
         </div>
-        <p className="mt-1.5 text-[11px] leading-relaxed text-ink/65">
-          Regular checkups and vaccinations keep your furry companions happy &
-          active!
-        </p>
-      </div>
+      )}
 
       {/* Bottom Section: Divider & Logout */}
       <div className="pt-4 pb-8 md:pb-6">
