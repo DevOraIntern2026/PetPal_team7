@@ -7,8 +7,9 @@ import { useAuth } from "../../lib/auth/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
 import AccountSidebar from "../../components/account/AccountSidebar";
 import DashboardTab from "../../components/account/DashboardTab";
+import AdminDashboard from "../../components/admin/AdminDashboard";
 
-export default function DashboardPage() {
+function UserDashboard() {
   const { user, ready, requireAuth } = useAuth();
   const router = useRouter();
   const { profile } = useProfile();
@@ -21,6 +22,7 @@ export default function DashboardPage() {
     }
   }, [ready, user, requireAuth, router]);
 
+  // Every other tab lives on /account
   const goToTab = (id) => {
     if (id !== "dashboard") router.push(`/account?tab=${id}`);
   };
@@ -50,4 +52,12 @@ export default function DashboardPage() {
       </main>
     </div>
   );
+}
+
+export default function DashboardPage() {
+  const { user, ready } = useAuth();
+  const isAdmin = Boolean(
+    user?.roles?.some((r) => String(r).toLowerCase() === "admin"),
+  );
+  return ready && isAdmin ? <AdminDashboard /> : <UserDashboard />;
 }
