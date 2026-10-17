@@ -9,8 +9,10 @@ import {
   Heart,
   ShoppingBag,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "../../lib/auth/AuthContext";
+import Link from "next/link";
 
 export const ACCOUNT_TABS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -23,6 +25,7 @@ export const ACCOUNT_TABS = [
 
 export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
   const { user, logout } = useAuth();
+  const isAdmin = user?.roles?.some((r) => String(r).toLowerCase() === "admin");
 
   const displayName = profile?.fullName || user?.name || "maryam";
   const displayEmail = profile?.email || user?.email || "maryamtarek@gmail.com";
@@ -77,8 +80,7 @@ export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
                   isActive
                     ? "border border-[#DCE4CF] bg-white font-bold text-ink shadow-sm"
                     : "font-semibold text-ink/70 hover:bg-white/60 hover:text-ink"
-                }`}
-              >
+                }`}>
                 <Icon
                   size={19}
                   className={isActive ? "text-primary-strong" : "text-ink/50"}
@@ -87,6 +89,15 @@ export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
               </button>
             );
           })}
+
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="mt-4 flex w-full items-center gap-3.5 rounded-xl bg-primary-deep px-4 py-3 text-sm font-bold text-white transition hover:bg-primary-strong">
+              <ShieldCheck size={19} />
+              <span>Admin panel</span>
+            </Link>
+          )}
         </nav>
       </div>
 
@@ -97,7 +108,8 @@ export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
           <span>PetPal Daily Tip</span>
         </div>
         <p className="mt-1.5 text-[11px] leading-relaxed text-ink/65">
-          Regular checkups and vaccinations keep your furry companions happy & active!
+          Regular checkups and vaccinations keep your furry companions happy &
+          active!
         </p>
       </div>
 
@@ -107,8 +119,7 @@ export default function AccountSidebar({ activeTab, onSelectTab, profile }) {
         <button
           type="button"
           onClick={logout}
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[#E76F51] transition hover:bg-orange-50 hover:text-[#c95337] active:scale-98"
-        >
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[#E76F51] transition hover:bg-orange-50 hover:text-[#c95337] active:scale-98">
           <LogOut size={19} className="text-[#E76F51]" />
           <span>Log Out</span>
         </button>
